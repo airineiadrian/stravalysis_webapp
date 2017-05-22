@@ -1,0 +1,4 @@
+<p> hello, user logat {{ accessToken }} </p>
+<select ng-model="selectedTimeframe" ng-options="x.duration for x in timeframes" ng-change="changeTimeframe(selectedTimeframe)"></select>
+<p> you selected: {{ selectedTimeframe.days }} </p>
+

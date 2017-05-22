@@ -1,0 +1,14 @@
+<html>
+	<head>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-cookies.js"></script>
+		<script src="app.js"></script>
+	</head>
+<body ng-app="stravalysis" ng-controller="mainCtrl">
+	<h1> Aplicatie Stravalysis </h1>
+	<div ng-show="loading == true"><h3>se incarca... aici va fi un spinning wheel</h3></div>
+	<div ng-view></div>
+</body>
+</html>
+

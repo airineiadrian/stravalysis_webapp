@@ -1,0 +1,16 @@
+<?php
+//header('Content-type: application/json');
+require_once('StravaApi.php');
+$api = new Iamstuartwilson\StravaApi(
+		17879,
+		'45845c77e4cd25aeee107083f5da7a40573d42e6');
+//$postdata = file_get_contents("php://input");
+//$data = json_decode($postdata);
+//$code = $data->code;
+//$oauthResponse = $api->tokenExchange($code);
+$api->setAccessToken('ee8ce08fbc17c0b80f826da264fe9c95f4c286b3');
+$activities = $api->get('athlete/activities', ['per_page' => 200]);
+print_r($activities);
+//$response = array('test' => '123');
+//echo json_encode($response);
+?>
