@@ -1,1 +1,0 @@
-# stravalysis_webapp
