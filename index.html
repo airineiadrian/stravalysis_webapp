@@ -15,10 +15,39 @@
 		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 		<script src="http://urigo.github.io/angular-spinkit/javascripts/angular-spinkit.js"></script>
 		<script src="js/app.js"></script>
+		<script src='https://api.mapbox.com/mapbox-gl-js/v0.38.0/mapbox-gl.js'></script>
+		<link href='https://api.mapbox.com/mapbox-gl-js/v0.38.0/mapbox-gl.css' rel='stylesheet' />
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 	</head>
 <body ng-app="stravalysis" ng-controller="mainCtrl">
 	<div ng-view></div>
+
+<div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog" style="overflow-y: scroll; max-height:85%;  margin-top: 50px; margin-bottom:50px;">
+    
+      <!-- Modal content-->
+      	<div class="modal-content">
+        	<div class="modal-header">
+          		<button type="button" class="close" data-dismiss="modal">&times;</button>
+          		<h4 class="modal-title">List of activities</h4>
+        	</div>
+        	<div class="modal-body">
+        		<div ng-repeat="glanceActivity in showChartGlanceActivities">
+                    <a href="{{glanceActivity.strava_link}}" target="_blank">{{glanceActivity.name}}</a>
+                    <h5>{{glanceActivity.moving_time_hm}}</h5>
+                    <h5>{{glanceActivity.distance / 1000}}km</h5>
+                    <h5>{{glanceActivity.total_elevation_gain}}m vertical</h5>
+                    <img src="{{ glanceActivity.summary_img_link }}">
+                    <hr>
+                </div>
+        	</div>
+        	<div class="modal-footer">
+          		<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        	</div>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
 

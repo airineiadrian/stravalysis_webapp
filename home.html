@@ -4,63 +4,130 @@
 
 
 <div class="container-fluid">
-	<div class="row content">    	
-		<div class="col-sm-2 sidenav">
-      		<h4>Stravalysis</h4>
-      		<ul class="nav nav-pills nav-stacked">
-				<li ng-class="{'active': activeDailyChart }"><a style="cursor:pointer" ng-click="activateDailyChart()">Daily Stats <i class="fa fa-bar-chart" aria-hidden="true"></i></a></li>
-				<li ng-class="{'active': activePopularRides }"><a style="cursor:pointer" ng-click="activatePopularRides()"> Popular Rides <i class="fa fa-fire" aria-hidden="true"></i></a></li>
-				<li ng-class="{'active': activeSearch }"><a style="cursor:pointer" ng-click="activateSearch()">Advanced Search <i class="fa fa-search-plus" aria-hidden="true"></i></a></li>
-			</ul><br>
-      		<div class="input-group">
-        		<input type="text" class="form-control" placeholder="Quick Search...">
-        		<span class="input-group-btn">
-          			<button class="btn btn-default" type="button">
-            			<span class="glyphicon glyphicon-search"></span>
-          			</button>
-        		</span>
-      		</div>
-    	</div>
+    <div class="row content">       
+        <div class="col-sm-3 sidenav">
+            <h4>Stravalysis</h4>
+            <ul class="nav nav-pills nav-stacked">
+                <li ng-class="{'active': activeDailyChart }"><a style="cursor:pointer" ng-click="activateDailyChart()"><i class="material-icons">insert_chart</i>Daily Stats</a></li>
+                <li ng-class="{'active': activePopularRides }"><a style="cursor:pointer" ng-click="activatePopularRides()"><i class="material-icons">whatshot</i>Popular Rides</a></li>
+            </ul><br>
+     
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Quick Search..." ng-click="activateSearch()" ng-model="search_for">
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button">
+                        <span class="glyphicon glyphicon-search"></span>
+                    </button>
+                </span>
+            </div>
+            <div ng-show="showChartGlance == true">
+                <div ng-repeat="glanceActivity in showChartGlanceActivities">
+                    <h5>{{glanceActivity.name}}</h5>
+                    <h5>{{glanceActivity.moving_time_hm}}</h5>
+                    <h5>{{glanceActivity.distance / 1000}}km</h5>
+                    <h5>{{glanceActivity.total_elevation_gain}}m vertical</h5>
+                    <img src="{{ glanceActivity.summary_img_link }}">
+                    <hr>
+                </div>
+            </div>
 
-
-		<div class="col-sm-10">
-      
-      <div ng-show="activeDailyChart == true">
-        <ul class="nav nav-tabs">
-          <li ng-class="{'active': showCycling}"><a style="cursor:pointer" ng-click="showCycling=true;showRunning=false"><i class="material-icons" style="font-size:28px;color:black">directions_bike</i></a></li>
-          <li ng-class="{'active': showRunning}"><a style="cursor:pointer" ng-click="showRunning=true;showCycling=false"><i class="material-icons" style="font-size:28px;color:black">directions_run</i></a></li>
-        </ul>
-        <br>
-        
-        <select ng-model="selectedTimeframe" ng-options="x.duration for x in timeframes" ng-change="changeTimeframe(selectedTimeframe)"></select>
-        
-        <div ng-show="loading == true" id="spinner" class="sk-circle">
-          <div class="sk-circle1 sk-child"></div>
-          <div class="sk-circle2 sk-child"></div>
-          <div class="sk-circle3 sk-child"></div>
-          <div class="sk-circle4 sk-child"></div>
-          <div class="sk-circle5 sk-child"></div>
-          <div class="sk-circle6 sk-child"></div>
-          <div class="sk-circle7 sk-child"></div>
-          <div class="sk-circle8 sk-child"></div>
-          <div class="sk-circle9 sk-child"></div>
-          <div class="sk-circle10 sk-child"></div>
-          <div class="sk-circle11 sk-child"></div>
-          <div class="sk-circle12 sk-child"></div>
         </div>
-        <div ng-show="loading == false">
-          <canvas id="myChart"></canvas>
-        </div> 
-      </div>
+
+
+        <div class="col-sm-9">
+      
+            <div ng-show="activeDailyChart == true">
+                <ul class="nav nav-tabs">
+                    <li ng-class="{'active': showCycling == true}"><a style="cursor:pointer" ng-click="changeShowCycling(true);changeTimeframe(selectedTimeframe)"><i class="material-icons" style="font-size:28px;color:black">directions_bike</i></a></li>
+                <li ng-class="{'active': showCycling == false}"><a style="cursor:pointer" ng-click="changeShowCycling(false);changeTimeframe(selectedTimeframe)"><i class="material-icons" style="font-size:28px;color:black">directions_run</i></a></li>
+                </ul>
+                <br>
+        
+                <select ng-model="selectedTimeframe" ng-options="x.duration for x in timeframes" ng-change="changeTimeframe(selectedTimeframe)"></select>
+        
+                <div ng-show="loading == true" id="spinner" class="sk-circle">
+                    <div class="sk-circle1 sk-child"></div>
+                    <div class="sk-circle2 sk-child"></div>
+                    <div class="sk-circle3 sk-child"></div>
+                    <div class="sk-circle4 sk-child"></div>
+                    <div class="sk-circle5 sk-child"></div>
+                    <div class="sk-circle6 sk-child"></div>
+                    <div class="sk-circle7 sk-child"></div>
+                    <div class="sk-circle8 sk-child"></div>
+                    <div class="sk-circle9 sk-child"></div>
+                    <div class="sk-circle10 sk-child"></div>
+                    <div class="sk-circle11 sk-child"></div>
+                    <div class="sk-circle12 sk-child"></div>
+                </div>
+                <div ng-show="loading == false">
+                    <canvas id="myChart"></canvas>
+                </div> 
+            </div>
+
+            <div ng-show="activePopularRides == true">
+                <div ng-show="loadingPopular == true" id="spinner" class="sk-circle">
+                    <div class="sk-circle1 sk-child"></div>
+                    <div class="sk-circle2 sk-child"></div>
+                    <div class="sk-circle3 sk-child"></div>
+                    <div class="sk-circle4 sk-child"></div>
+                    <div class="sk-circle5 sk-child"></div>
+                    <div class="sk-circle6 sk-child"></div>
+                    <div class="sk-circle7 sk-child"></div>
+                    <div class="sk-circle8 sk-child"></div>
+                    <div class="sk-circle9 sk-child"></div>
+                    <div class="sk-circle10 sk-child"></div>
+                    <div class="sk-circle11 sk-child"></div>
+                    <div class="sk-circle12 sk-child"></div>
+                </div>
+                <div ng-show="loadingPopular == false" style="border: 1px dotted black;
+                overflow-x: hidden; overflow-y: scroll; height: 90%;">
+                    <div ng-repeat="popularActivity in (allActivities | orderBy: '-kudos_count' | limitTo: 10)">
+                        <a href="{{popularActivity.strava_link}}" target="_blank">{{popularActivity.name}}</a>
+                        <h4>{{popularActivity.kudos_count}} Kudos</h4>
+                        <h5>{{popularActivity.moving_time_hm}}</h5>
+                        <h5>{{popularActivity.distance / 1000}}km</h5>
+                        <h5>{{popularActivity.total_elevation_gain}}m vertical</h5>
+                        <img src="{{ popularActivity.summary_img_link }}">
+                        <hr>
+                    </div>
+                </div>
+            </div>
+
+            <div ng-show="activeSearch == true">
+                <div ng-show="loadingPopular == true" id="spinner" class="sk-circle">
+                    <div class="sk-circle1 sk-child"></div>
+                    <div class="sk-circle2 sk-child"></div>
+                    <div class="sk-circle3 sk-child"></div>
+                    <div class="sk-circle4 sk-child"></div>
+                    <div class="sk-circle5 sk-child"></div>
+                    <div class="sk-circle6 sk-child"></div>
+                    <div class="sk-circle7 sk-child"></div>
+                    <div class="sk-circle8 sk-child"></div>
+                    <div class="sk-circle9 sk-child"></div>
+                    <div class="sk-circle10 sk-child"></div>
+                    <div class="sk-circle11 sk-child"></div>
+                    <div class="sk-circle12 sk-child"></div>
+                </div>
+                <div ng-show="loadingPopular == false" style="border: 1px dotted black;
+                overflow-x: hidden; overflow-y: scroll; height: 90%;">
+                    <div ng-repeat="searchActivity in (allActivities | filter: {'name':search_for} | limitTo: 10)">
+                        <a href="{{searchActivity.strava_link}}" target="_blank">{{searchActivity.name}}</a>
+                        <h4>{{searchActivity.start_date}} </h4>
+                        <h5>{{searchActivity.moving_time_hm}}</h5>
+                        <h5>{{searchActivity.distance / 1000}}km</h5>
+                        <h5>{{searchActivity.total_elevation_gain}}m vertical</h5>
+                        <img src="{{ searchActivity.summary_img_link }}">
+                        <hr>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
-  </div>
 </div>
 
 <footer class="container-fluid">
-  <hr>
-  <p align="center">copyright Sica si Tva</p>
-  {{activities}}
+    <hr>
+    <p align="center">copyright Sica si Tva</p>
 </footer>
-
-
 

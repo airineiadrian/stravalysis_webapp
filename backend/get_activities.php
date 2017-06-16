@@ -9,22 +9,46 @@ $data = json_decode($postdata);
 $accessToken = $data->access_token;
 $api->setAccessToken($accessToken);
 $substract_days = $data->substract_days;
+$take_all = false;
+if($substract_days == -1)
+	$take_all = true;
 $date = new DateTime($substract_days . ' days ago');
+$date->setTime(0, 0);
 
-$activities = $api->get('athlete/activities', ['per_page' => 200, 'after' => $date->getTimestamp()]);
+$pageIndex = 1;
 $activityList = array();
 
-foreach ($activities as $activity) {
-	/*$obj = (object) array('kudos' => $activity->kudos_count, 'name' => $activity->name, 
-			'location' => $activity->location_city.','.$activity->location_state.','.$activity->location_country, 
-			'link' => 'https://www.strava.com/activities/' . $activity->id, 
-			'start_date' => $activity->start_date, 'distance' => $activity->distance,
-			'type' => $activity->type, 'average_speed' => $activity->average_speed);
-	*/
-	$obj = (object)$activity;
-	array_push($activityList, $obj);
+while(true) {
+	if($take_all) {
+		$activities = $api->get('athlete/activities', ['per_page' => 200, 'page' => $pageIndex]);
+	} else {
+		$activities = $api->get('athlete/activities', ['per_page' => 200, 'after' => $date->getTimestamp(), 'page' => $pageIndex]);
+	}
+	
+	if(!$activities)
+		break;
+	
+	foreach ($activities as $activity) {
+		$activity->strava_link = 'https://www.strava.com/activities/' . $activity->id;
+		
+		$poly = $activity->map->summary_polyline;
+		$poly = str_replace('\\\\', '\\', $poly);
+		$summary_img_link = 'https://maps.googleapis.com/maps/api/staticmap?size=200x200&path=weight:4|color:red|enc:';
+		$summary_img_link .= $poly;
+		$summary_img_link .= '&sensor=true&key=AIzaSyDg-GJdb6dPDanay9u_SjENXx8gA8gSNPk';
+		
+		$h = $activity->moving_time / 60 / 60;
+		$h = intval($h);
+		$m = ($activity->moving_time / 60) % 60;
+		$activity->moving_time_hm = ($h == 0 ? '' : $h.'h:') . ($m < 10 && $h != 0 ? '0' : '') . $m . 'mins';
+		$activity->summary_img_link = $summary_img_link;
+
+		$obj = (object)$activity;
+		array_push($activityList, $obj);
+	}
+	$pageIndex++;
 }
 
-$response = json_encode(array('data' => $activityList));
+$response = json_encode($activityList);
 echo $response;
 ?>

@@ -6,6 +6,7 @@ app.factory('chartBuilder', function($rootScope) {
 	service.myChart = undefined;
 
 	service.build = function(activities, daysAgo) {
+
 		var ctx = document.getElementById("myChart").getContext("2d");
 	
 		function newDate(days) {
@@ -34,28 +35,34 @@ app.factory('chartBuilder', function($rootScope) {
 			return day+'.'+monthIndex+'.'+year;
 		}
 
-		var activityList = activities.data;
+		var activityList = activities;
 		var days = [];
 		var distanceData = [];
+		var activitiesPerDay = [];
 
 		var index = daysAgo;
 		for(; index >= 0; index--) {
 			var curDate = newDate(-index);
 			var visited = false;
 			var i, n = activityList.length;
+			var totalDistance = 0;
+			var daysActivities = [];
 			for(i = 0; i < n; i++) {
 				var activity = activityList[i];
 				var activityDate = new Date(activity.start_date);
 				if(formatDateDMY(activityDate) == formatDateDMY(curDate)) {
-					days.push(activityDate);
-					distanceData.push(activity.distance / 1000);
+					if(visited == false)
+						days.push(activityDate);
+					totalDistance += activity.distance / 1000;
 					visited = true;
+					daysActivities.push(activity);
 				}
 			}
 			if(visited == false) {
 				days.push(curDate);
-				distanceData.push(0);
 			}
+			activitiesPerDay.push(daysActivities);
+			distanceData.push(totalDistance);
 		}
 
 		
@@ -88,7 +95,17 @@ app.factory('chartBuilder', function($rootScope) {
 				},
 				hover: {
 					onHover: function(e, elements) { 
-						$(e.currentTarget).css("cursor", elements[0] ? "pointer" : "default"); 
+						$(e.currentTarget).css("cursor", elements[0] ? "pointer" : "default");
+						
+						if(elements[0]) {
+							$rootScope.showChartGlance = true;
+							$rootScope.showChartGlanceActivities = activitiesPerDay[elements[0]['_index']];
+							$rootScope.$apply();
+						} else {
+							$rootScope.showChartGlance = false;
+							$rootScope.$apply();
+						}
+
 					}
 				},
 				legend: {
@@ -119,7 +136,7 @@ app.factory('chartBuilder', function($rootScope) {
 						ticks: {
 							beginAtZero: true,
 							callback: function(value, index, values) {
-								return value + ' km';
+								return Math.round(value) + ' km';
 							}
 						},
 					}],
@@ -129,17 +146,17 @@ app.factory('chartBuilder', function($rootScope) {
 
 						callbacks : { // HERE YOU CUSTOMIZE THE LABELS
 							title : function(tooltipItem, data) {
-								return '***** My custom label title *****' + JSON.stringify(tooltipItem);
+								return data.labels[tooltipItem[0].index];
 							},
 							beforeLabel : function(tooltipItem, data) {
-								return 'Month ' + ': ' + tooltipItem.xLabel + JSON.stringify(tooltipItem);
+								return '';
 							},
 							label : function(tooltipItem, data) {
-								return data.datasets[tooltipItem.datasetIndex].label + ': ' + tooltipItem.yLabel;
+								return data.datasets[tooltipItem.datasetIndex].label + ': ' + tooltipItem.yLabel + 'km';
 							},
 							afterLabel : function(tooltipItem, data) {
 								// return array of string for multiple lines
-								return ['***** Test *****', 'asdas'];
+								return [''];
 							},
 						}
 
@@ -147,8 +164,9 @@ app.factory('chartBuilder', function($rootScope) {
 
 			}
 		});
-		document.getElementById("myChart").onclick = function(evt){
+		document.getElementById("myChart").onclick = function(evt) {
 			var activePoints = service.myChart.getElementsAtEvent(evt);
+			console.log(activePoints);
 			var chartData = activePoints[0]['_chart'].config.data;
 			var idx = activePoints[0]['_index'];
 
@@ -156,7 +174,11 @@ app.factory('chartBuilder', function($rootScope) {
 			var value = chartData.datasets[0].data[idx];
 
 			var url = "http://example.com/?label=" + label + "&value=" + value;
-			window.open(url,'_blank');
+			//window.open(url,'_blank');
+			$rootScope.sicaVar = [1,2,3];
+			console.log($rootScope);
+			$rootScope.$apply();
+			$("#myModal").modal(); 
 		};
 	}
 
@@ -247,7 +269,10 @@ app.config(function($routeProvider) {
 						.then(function (response) {
 							var accessToken = response.data.access_token;
 							if(accessToken) {
-								$cookies.put('accessToken', accessToken);
+								var expireDate = new Date();
+								expireDate.setDate(expireDate.getDate()+30);
+								console.log('sica expire date ' + expireDate);
+								$cookies.put('accessToken', accessToken, {'expires': expireDate});
 								$rootScope.accessToken = accessToken;
 								$location.path('/home');
 							} else {
@@ -279,6 +304,9 @@ app.run(function($rootScope) {
 	$rootScope.loading = false;
 	$rootScope.clientId = '17879';
 	$rootScope.clientSecret = '45845c77e4cd25aeee107083f5da7a40573d42e6';
+	$rootScope.sicaVar = 'SMB';
+	$rootScope.showChartGlance = false;
+	$rootScope.loadingPopular = true;
 });
 
 app.controller('mainCtrl', function($rootScope, $scope, $cookies, stravaApiService, userService, chartBuilder) {
@@ -288,7 +316,20 @@ app.controller('mainCtrl', function($rootScope, $scope, $cookies, stravaApiServi
 	$scope.activeDailyChart = true;
 	$scope.activeSearch = false;
 	$scope.showCycling = true;
-	$scope.showRunning = false;
+	$scope.search_for = "";
+
+	$scope.filterActivities = function(activities, showCycling) {
+		var result = [];
+		var len = activities.length;
+		for(var index = 0; index < len; index++) {
+			if(showCycling == true && activities[index].type == "Ride")
+				result.push(activities[index]);
+			if(showCycling == false && activities[index].type == "Run")
+				result.push(activities[index]);
+		}
+		return result;
+	};
+
 	$rootScope.accessToken = $cookies.get('accessToken');
 	$scope.timeframes = [ {duration: 'Last Week', days: 7}, {duration: 'Last 2 Weeks', days: 14}, 
 			{duration: 'Last Month', days: 30}, {duration: 'Last 3 Months', days: 90}, 
@@ -300,16 +341,25 @@ app.controller('mainCtrl', function($rootScope, $scope, $cookies, stravaApiServi
 	$rootScope.$watch('accessToken', function() {
 			console.log('sica accestoken');
 			stravaApiService.getActivites('7').then(function(activities) {
-			$scope.activities = activities;
-			chartBuilder.build(activities, 7);
+			$scope.activities = $scope.filterActivities(activities, $scope.showCycling);
+			chartBuilder.build($scope.activities, 7);
+			});
+
+			stravaApiService.getActivites(-1).then(function(activities) {
+				$scope.allActivities = activities;
+				$rootScope.loadingPopular = false;
+				console.log('got all activities');
 			});
 	});
 
-	console.log("sica aici");
+	$scope.changeShowCycling = function(value) {
+		$scope.showCycling = value;
+	}
+
 	$scope.changeTimeframe = function(value) {
 		stravaApiService.getActivites(value.days).then(function(activities) {
-			$scope.activities = activities;
-			chartBuilder.build(activities, value.days);
+			$scope.activities = $scope.filterActivities(activities, $scope.showCycling);
+			chartBuilder.build($scope.activities, value.days);
 		}); 
 	};
 

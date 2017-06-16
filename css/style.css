@@ -1,4 +1,7 @@
 
+html, body {
+  overflow: hidden;
+}
 
 /* loading spinning wheel */
 .sk-circle {
