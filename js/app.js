@@ -5,7 +5,7 @@ app.factory('chartBuilder', function($rootScope) {
 
 	service.myChart = undefined;
 
-	service.build = function(activities, daysAgo) {
+	service.build = function(activities, daysAgo, metric) {
 
 		var ctx = document.getElementById("myChart").getContext("2d");
 	
@@ -38,14 +38,20 @@ app.factory('chartBuilder', function($rootScope) {
 		var activityList = activities;
 		var days = [];
 		var distanceData = [];
+		var hoursData = [];
+		var elevationData = [];
+		var speedData = [];
 		var activitiesPerDay = [];
 
 		var index = daysAgo;
+		console.log('DEBUG ce plm days ago: ' + daysAgo);
 		for(; index >= 0; index--) {
 			var curDate = newDate(-index);
 			var visited = false;
 			var i, n = activityList.length;
 			var totalDistance = 0;
+			var totalHours = 0;
+			var totalElevation = 0;
 			var daysActivities = [];
 			for(i = 0; i < n; i++) {
 				var activity = activityList[i];
@@ -54,6 +60,8 @@ app.factory('chartBuilder', function($rootScope) {
 					if(visited == false)
 						days.push(activityDate);
 					totalDistance += activity.distance / 1000;
+					totalHours += activity.moving_time;
+					totalElevation += activity.total_elevation_gain;
 					visited = true;
 					daysActivities.push(activity);
 				}
@@ -63,10 +71,67 @@ app.factory('chartBuilder', function($rootScope) {
 			}
 			activitiesPerDay.push(daysActivities);
 			distanceData.push(totalDistance);
+			hoursData.push(totalHours);
+			elevationData.push(totalElevation);
+			if(totalDistance > 0)
+				speedData.push(totalDistance / (totalHours / 3600));
+			else
+				speedData.push(0);
 		}
-
 		
-		var barChartData = distanceData;
+		var minYValue = 0;
+		var stepSize = 0;
+		console.log('DEBUG metrica aleasa: ' + metric);
+		if(metric == 'distance') {
+			var callbackYLabel = function(value, index, values) {
+				if(value == 0)
+					return '';
+				return Math.round(value) + ' km';
+			};
+			var barChartData = distanceData;
+		}
+		if(metric == 'time') {
+			var callbackYLabel = function(value, index, values) {
+				if(value == 0)
+					return '';
+				var h = Math.floor(value / 60 / 60);
+				var m = Math.round(value / 60 % 60);
+				if(m < 10)
+					m = '0'+m;
+				return h + ':' + m + ' hours';
+			};
+			// set to 30 minutes
+			stepSize = 1800;
+			var barChartData = hoursData;
+		}
+		if(metric == 'elevation') {
+			var callbackYLabel = function(value, index, values) {
+				if(value == 0)
+					return 'rest day';
+				return Math.round(value) + ' meters';
+			};
+			var barChartData = elevationData;
+		}
+		if(metric == 'pace') {
+			var callbackYLabel = function(value, index, values) {
+				if(value == 0)
+					return 'rest day';
+				var mins = Math.floor(3600 / value / 60);
+				var secs = Math.round(3600 / value % 60);
+				if(secs < 10)
+					secs = '0'+secs;
+				return mins + ':' + secs + ' min/km'; 
+			};
+			var barChartData = speedData;
+			var minSpeed = 1000000;
+			for(var i = 0; i < speedData.length; i++)
+				if(speedData[i] != 0 && speedData[i] < minSpeed)
+					minSpeed = speedData[i];
+			minYValue = minSpeed - 1;
+		}
+		console.log(activities);
+		console.log(barChartData);
+
 		var dates = days;
 
 		if(service.myChart != undefined) {
@@ -77,7 +142,6 @@ app.factory('chartBuilder', function($rootScope) {
 			data: {
 				labels: dates,
 				datasets: [{
-					label: 'distance ridden',
 					data: barChartData,
 					backgroundColor: 
 						'rgba(255, 99, 132, 0.2)'
@@ -132,18 +196,17 @@ app.factory('chartBuilder', function($rootScope) {
 						},
 					}],
 					yAxes: [{
-						stacked: true,
+						//stacked: true,
 						ticks: {
 							beginAtZero: true,
-							callback: function(value, index, values) {
-								return Math.round(value) + ' km';
-							}
+							min: minYValue,
+							callback: callbackYLabel,
+							stepSize: stepSize,
 						},
 					}],
 				},
 				tooltips : {
 						displayColors: false,
-
 						callbacks : { // HERE YOU CUSTOMIZE THE LABELS
 							title : function(tooltipItem, data) {
 								return data.labels[tooltipItem[0].index];
@@ -175,8 +238,6 @@ app.factory('chartBuilder', function($rootScope) {
 
 			var url = "http://example.com/?label=" + label + "&value=" + value;
 			//window.open(url,'_blank');
-			$rootScope.sicaVar = [1,2,3];
-			console.log($rootScope);
 			$rootScope.$apply();
 			$("#myModal").modal(); 
 		};
@@ -223,6 +284,7 @@ app.factory('stravaApiService', function($rootScope, $http) {
 app.config(function($routeProvider) {
 	$routeProvider
 		.when("/", {
+			controller: 'mainCtrl',
 			templateUrl: 'login.html',
 			resolve: {
 				redirect: function($location, userService) {
@@ -233,6 +295,7 @@ app.config(function($routeProvider) {
 			}
 		})
 		.when("/logout", {
+			controller: 'mainCtrl',
 			resolve: {
 				logout: function($location, userService) {
 					userService.logoutUser();
@@ -241,6 +304,7 @@ app.config(function($routeProvider) {
 			}
 		})
 		.when("/login", {
+			controller: 'mainCtrl',
 			templateUrl: 'login.html',
 			resolve: {
 				redirect: function($location, userService) {
@@ -257,6 +321,7 @@ app.config(function($routeProvider) {
 			}
 		})
 		.when("/login/:code", {
+			controller: 'mainCtrl',
 			resolve: {
  				loginWithCode: function($route, $rootScope, $location, $http, $cookies) {
 					var authCode = $route.current.params.code;
@@ -284,6 +349,7 @@ app.config(function($routeProvider) {
 			}
 		})
 		.when("/home", {
+			controller: 'mainCtrl',
 			templateUrl: 'home.html',
 			resolve: {
 				redirect: function($location, userService) {
@@ -296,7 +362,7 @@ app.config(function($routeProvider) {
 				}
 			}
 		})
-		.otherwise({redirectTo:'/'});
+		.otherwise({controller: 'mainCtrl', redirectTo:'/'});
 	
 });
 
@@ -304,7 +370,6 @@ app.run(function($rootScope) {
 	$rootScope.loading = false;
 	$rootScope.clientId = '17879';
 	$rootScope.clientSecret = '45845c77e4cd25aeee107083f5da7a40573d42e6';
-	$rootScope.sicaVar = 'SMB';
 	$rootScope.showChartGlance = false;
 	$rootScope.loadingPopular = true;
 });
@@ -334,23 +399,31 @@ app.controller('mainCtrl', function($rootScope, $scope, $cookies, stravaApiServi
 	$scope.timeframes = [ {duration: 'Last Week', days: 7}, {duration: 'Last 2 Weeks', days: 14}, 
 			{duration: 'Last Month', days: 30}, {duration: 'Last 3 Months', days: 90}, 
 			{duration: 'Last 6 Months', days: 180} ];
+	$scope.metrics = [ ['distance', 'time', 'elevation'], ['distance', 'time', 'elevation', 'pace'] ];
 	
 	// TODO: this is a hack, use resolve in $routeProvider instead
 	$scope.selectedTimeframe = $scope.timeframes[0];
+	$scope.selectedMetric = $scope.metrics[0][0];
+	console.log('sicaaaaa');
+	console.log($scope.selectedTimeframe);
 	
 	$rootScope.$watch('accessToken', function() {
-			console.log('sica accestoken');
-			stravaApiService.getActivites('7').then(function(activities) {
-			$scope.activities = $scope.filterActivities(activities, $scope.showCycling);
-			chartBuilder.build($scope.activities, 7);
-			});
+			console.log('sica accestoken: ' + $rootScope.accessToken);
+			if($rootScope.accessToken) {
+				stravaApiService.getActivites('7').then(function(activities) {
+					$scope.activities = $scope.filterActivities(activities, $scope.showCycling);
+					chartBuilder.build($scope.activities, 7, 'distance');
+				});
 
-			stravaApiService.getActivites(-1).then(function(activities) {
-				$scope.allActivities = activities;
-				$rootScope.loadingPopular = false;
-				console.log('got all activities');
-			});
+				stravaApiService.getActivites(-1).then(function(activities) {
+					$scope.allActivities = activities;
+					$rootScope.loadingPopular = false;
+					console.log('got all activities');
+				});
+			}
 	});
+
+	console.log('sica aici');
 
 	$scope.changeShowCycling = function(value) {
 		$scope.showCycling = value;
@@ -359,8 +432,13 @@ app.controller('mainCtrl', function($rootScope, $scope, $cookies, stravaApiServi
 	$scope.changeTimeframe = function(value) {
 		stravaApiService.getActivites(value.days).then(function(activities) {
 			$scope.activities = $scope.filterActivities(activities, $scope.showCycling);
-			chartBuilder.build($scope.activities, value.days);
+			chartBuilder.build($scope.activities, value.days, $scope.selectedMetric);
 		}); 
+	};
+
+	$scope.changeMetric = function(value) {
+		$scope.selectedMetric = value;
+		chartBuilder.build($scope.activities, $scope.selectedTimeframe.days, $scope.selectedMetric);
 	};
 
 	$scope.activateDailyChart = function() {

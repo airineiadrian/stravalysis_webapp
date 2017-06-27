@@ -3,6 +3,46 @@ html, body {
   overflow: hidden;
 }
 
+.text {
+  font-family: 'Nunito Sans', sans-serif;
+}
+
+.headers {
+  font-family: 'Allerta Stencil', sans-serif;
+}
+
+.landing {
+  background-image: url('../img/backgr.jpg');
+  background-repeat:no-repeat;
+  background-size:cover;
+  height:100%;
+  width: 100%;
+}
+
+.vertical-align {
+    display: flex;
+    align-items: center;
+}
+
+.connect-with-strava {
+    
+}
+
+.well {
+   background-color: rgba(245, 245, 245, 0.4);
+}
+
+.connect-with-strava:hover .fa {
+  transform: scale(2.0);
+}
+
+.connect-with-strava button {
+  padding: 10px;
+  height: 50px;
+  width: 200px;
+}
+
+
 /* loading spinning wheel */
 .sk-circle {
   margin: 100px auto;

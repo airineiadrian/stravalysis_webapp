@@ -2,7 +2,6 @@
 <a href="#logout">logout</a>
 <br />
 
-
 <div class="container-fluid">
     <div class="row content">       
         <div class="col-sm-3 sidenav">
@@ -26,6 +25,7 @@
                     <h5>{{glanceActivity.moving_time_hm}}</h5>
                     <h5>{{glanceActivity.distance / 1000}}km</h5>
                     <h5>{{glanceActivity.total_elevation_gain}}m vertical</h5>
+                    {{glanceActivity.average_speed}}
                     <img src="{{ glanceActivity.summary_img_link }}">
                     <hr>
                 </div>
@@ -38,12 +38,13 @@
       
             <div ng-show="activeDailyChart == true">
                 <ul class="nav nav-tabs">
-                    <li ng-class="{'active': showCycling == true}"><a style="cursor:pointer" ng-click="changeShowCycling(true);changeTimeframe(selectedTimeframe)"><i class="material-icons" style="font-size:28px;color:black">directions_bike</i></a></li>
-                <li ng-class="{'active': showCycling == false}"><a style="cursor:pointer" ng-click="changeShowCycling(false);changeTimeframe(selectedTimeframe)"><i class="material-icons" style="font-size:28px;color:black">directions_run</i></a></li>
+                    <li ng-class="{'active': showCycling == true}"><a style="cursor:pointer" ng-click="changeShowCycling(true);changeMetric('distance');changeTimeframe(selectedTimeframe)"><i class="material-icons" style="font-size:28px;color:black">directions_bike</i></a></li>
+                <li ng-class="{'active': showCycling == false}"><a style="cursor:pointer" ng-click="changeShowCycling(false);changeMetric('distance');changeTimeframe(selectedTimeframe)"><i class="material-icons" style="font-size:28px;color:black">directions_run</i></a></li>
                 </ul>
                 <br>
         
                 <select ng-model="selectedTimeframe" ng-options="x.duration for x in timeframes" ng-change="changeTimeframe(selectedTimeframe)"></select>
+                <select ng-model="selectedMetric" ng-options="x for x in metrics[showCycling ? 0 : 1]" ng-change="changeMetric(selectedMetric)"></select>
         
                 <div ng-show="loading == true" id="spinner" class="sk-circle">
                     <div class="sk-circle1 sk-child"></div>
