@@ -92,6 +92,9 @@ var buildChartHelper = function(activities, daysAgo, metric) {
 				return '';
 			return Math.round(value) + ' km';
 		};
+		var callbackTooltip = function(tooltipItem, data) {
+			return Math.round(tooltipItem.yLabel) + ' kilometers';
+		};
 		var barChartData = distanceData;
 	}
 	if(metric == 'time') {
@@ -106,6 +109,16 @@ var buildChartHelper = function(activities, daysAgo, metric) {
 		};
 		// set to 30 minutes
 		stepSize = 1800;
+		var callbackTooltip = function(tooltipItem, data) {
+			var h = Math.floor(tooltipItem.yLabel / 60 / 60);
+			var m = Math.round(tooltipItem.yLabel / 60 % 60);
+			var ret = '';
+			if(h > 0)
+				ret = ret + h + 'hours ';
+			ret = ret + m + 'minutes'; 
+			return ret;
+		};
+
 		var barChartData = hoursData;
 	}
 	if(metric == 'elevation') {
@@ -114,6 +127,10 @@ var buildChartHelper = function(activities, daysAgo, metric) {
 				return 'rest day';
 			return Math.round(value) + ' meters';
 		};
+		var callbackTooltip = function(tooltipItem, data) {
+			return Math.round(tooltipItem.yLabel) + ' meters';
+		};
+
 		var barChartData = elevationData;
 	}
 	if(metric == 'pace') {
@@ -132,7 +149,11 @@ var buildChartHelper = function(activities, daysAgo, metric) {
 			if(speedData[i] != 0 && speedData[i] < minSpeed)
 				minSpeed = speedData[i];
 		minYValue = minSpeed - 1;
+		var callbackTooltip = function(tooltipItem, data) {
+			return callbackYLabel(tooltipItem.yLabel, 0, 0);
+		}
 	}
+
 	console.log(activities);
 	console.log(barChartData);
 
@@ -200,14 +221,12 @@ var buildChartHelper = function(activities, daysAgo, metric) {
 						displayColors: false,
 						callbacks : { // HERE YOU CUSTOMIZE THE LABELS
 							title : function(tooltipItem, data) {
-								return data.labels[tooltipItem[0].index];
+								return data.labels[tooltipItem[0].index].toString().substring(0, 24);
 							},
 							beforeLabel : function(tooltipItem, data) {
 								return '';
 							},
-							label : function(tooltipItem, data) {
-								return data.datasets[tooltipItem.datasetIndex].label + ': ' + tooltipItem.yLabel + 'km';
-							},
+							label : callbackTooltip,
 							afterLabel : function(tooltipItem, data) {
 								// return array of string for multiple lines
 								return [''];

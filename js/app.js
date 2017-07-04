@@ -15,6 +15,7 @@ app.factory('chartBuilder', function($rootScope) {
 		var helper = buildChartHelper(activities, daysAgo, metric);
 		service.myChart = helper.chart;
 
+		
 		document.getElementById("myChart").onclick = function(evt) {
 			var activePoints = service.myChart.getElementsAtEvent(evt);
 			console.log('DEBUG activePoints: ');
