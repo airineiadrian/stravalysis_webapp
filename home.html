@@ -1,69 +1,84 @@
+<nav class="navbar navbar-default navbar-static-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>                        
+          </button>
+          <a class="navbar-brand headers" style="color: #ee7600;" ref="#">STRAVALYSIS</a>
+        </div>
 
-<a href="#logout">logout</a>
-<br />
+        <div class="collapse navbar-collapse" id="myNavbar">
+            <ul class="nav navbar-nav">
+                <li ng-class="{'active': activeDailyChart }"><a style="cursor:pointer" class="text" ng-click="activateDailyChart()"><span class="glyphicon glyphicon-stats"></span> Daily Stats</a></li>
+                <li ng-class="{'active': activePopularRides }"><a style="cursor:pointer" class="text" ng-click="activatePopularRides()"><span class="glyphicon glyphicon-thumbs-up"></span> Popular Rides</a></li>
+                <li><form class="navbar-form" style="padding-top: 8px; margin: 0;">
+                    <div class="input-group">
+                        <span class="input-group-addon" id="sizing-addon2"><span class="glyphicon glyphicon-search"></span></span>
+                        <input type="text" class="form-control text" placeholder="Search Activity..." ng-click="activateSearch()" ng-model="search_for">
+                    </div>
+                </form></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="strava/id" style="padding-top: 2px; padding-bottom: 2px;"><img src="{{athlete.profile_medium}}" class="img-circle" style="height: 46px;"></a></li>
+                <li><a href="#logout" class="text"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+            </ul>
+        </div>
+
+    </div>
+</nav>
 
 <div class="container-fluid">
     <div class="row content">       
-        <div class="col-sm-3 sidenav">
-            <h4>Stravalysis</h4>
-            <ul class="nav nav-pills nav-stacked">
-                <li ng-class="{'active': activeDailyChart }"><a style="cursor:pointer" ng-click="activateDailyChart()"><i class="material-icons">insert_chart</i>Daily Stats</a></li>
-                <li ng-class="{'active': activePopularRides }"><a style="cursor:pointer" ng-click="activatePopularRides()"><i class="material-icons">whatshot</i>Popular Rides</a></li>
-            </ul><br>
-     
-            <div class="input-group">
-                <input type="text" class="form-control" placeholder="Quick Search..." ng-click="activateSearch()" ng-model="search_for">
-                <span class="input-group-btn">
-                    <button class="btn btn-default" type="button">
-                        <span class="glyphicon glyphicon-search"></span>
-                    </button>
-                </span>
-            </div>
-            <div ng-show="showChartGlance == true">
-                <div ng-repeat="glanceActivity in showChartGlanceActivities">
-                    <h5>{{glanceActivity.name}}</h5>
-                    <h5>{{glanceActivity.moving_time_hm}}</h5>
-                    <h5>{{glanceActivity.distance / 1000}}km</h5>
-                    <h5>{{glanceActivity.total_elevation_gain}}m vertical</h5>
-                    {{glanceActivity.average_speed}}
-                    <img src="{{ glanceActivity.summary_img_link }}">
-                    <hr>
-                </div>
-            </div>
+        <div class="col-sm-12">
 
-        </div>
-
-
-        <div class="col-sm-9">
-      
             <div ng-show="activeDailyChart == true">
-                <ul class="nav nav-tabs">
-                    <li ng-class="{'active': showCycling == true}"><a style="cursor:pointer" ng-click="changeShowCycling(true);changeMetric('distance');changeTimeframe(selectedTimeframe)"><i class="material-icons" style="font-size:28px;color:black">directions_bike</i></a></li>
-                <li ng-class="{'active': showCycling == false}"><a style="cursor:pointer" ng-click="changeShowCycling(false);changeMetric('distance');changeTimeframe(selectedTimeframe)"><i class="material-icons" style="font-size:28px;color:black">directions_run</i></a></li>
-                </ul>
-                <br>
-        
-                <select ng-model="selectedTimeframe" ng-options="x.duration for x in timeframes" ng-change="changeTimeframe(selectedTimeframe)"></select>
-                <select ng-model="selectedMetric" ng-options="x for x in metrics[showCycling ? 0 : 1]" ng-change="changeMetric(selectedMetric)"></select>
-        
-                <div ng-show="loading == true" id="spinner" class="sk-circle">
-                    <div class="sk-circle1 sk-child"></div>
-                    <div class="sk-circle2 sk-child"></div>
-                    <div class="sk-circle3 sk-child"></div>
-                    <div class="sk-circle4 sk-child"></div>
-                    <div class="sk-circle5 sk-child"></div>
-                    <div class="sk-circle6 sk-child"></div>
-                    <div class="sk-circle7 sk-child"></div>
-                    <div class="sk-circle8 sk-child"></div>
-                    <div class="sk-circle9 sk-child"></div>
-                    <div class="sk-circle10 sk-child"></div>
-                    <div class="sk-circle11 sk-child"></div>
-                    <div class="sk-circle12 sk-child"></div>
+                <div class="col-sm-9" style="padding-right: 0px; padding-left: 0px;">
+                    <ul class="nav nav-tabs">
+                        <li ng-class="{'active': showCycling == true}"><a style="cursor:pointer" ng-click="changeShowCycling(true);changeMetric('distance');changeTimeframe(selectedTimeframe)"><i class="material-icons" style="font-size:28px;color:black">directions_bike</i></a></li>
+                        <li ng-class="{'active': showCycling == false}"><a style="cursor:pointer" ng-click="changeShowCycling(false);changeMetric('distance');changeTimeframe(selectedTimeframe)"><i class="material-icons" style="font-size:28px;color:black">directions_run</i></a></li>
+                        
+                        <div style="text-align: right;" class="form-group form-inline">    
+                            <select class="form-control text" style="width: 150px; cursor:pointer;" ng-model="selectedTimeframe" ng-options="x.duration for x in timeframes" ng-change="changeTimeframe(selectedTimeframe)"></select>
+                            <select class="form-control text" style="width: 150px; text-transform: capitalize; cursor:pointer;" ng-model="selectedMetric" ng-options="x for x in metrics[showCycling ? 0 : 1]" ng-change="changeMetric(selectedMetric)"></select>
+                        </div>
+                        
+                    </ul>
+
+                    <div ng-show="loading == true" id="spinner" class="sk-circle">
+                        <div class="sk-circle1 sk-child"></div>
+                        <div class="sk-circle2 sk-child"></div>
+                        <div class="sk-circle3 sk-child"></div>
+                        <div class="sk-circle4 sk-child"></div>
+                        <div class="sk-circle5 sk-child"></div>
+                        <div class="sk-circle6 sk-child"></div>
+                        <div class="sk-circle7 sk-child"></div>
+                        <div class="sk-circle8 sk-child"></div>
+                        <div class="sk-circle9 sk-child"></div>
+                        <div class="sk-circle10 sk-child"></div>
+                        <div class="sk-circle11 sk-child"></div>
+                        <div class="sk-circle12 sk-child"></div>
+                    </div>
+                    <div ng-show="loading == false" id="sica" style="padding-top: 20px;">
+                        <canvas id="myChart"></canvas>
+                    </div> 
                 </div>
-                <div ng-show="loading == false">
-                    <canvas id="myChart"></canvas>
-                </div> 
+                <div class="col-sm-3">
+                    <div ng-show="showChartGlance == true">
+                        <div ng-repeat="glanceActivity in showChartGlanceActivities">
+                            <h5>{{glanceActivity.name}}</h5>
+                            <h5>{{glanceActivity.moving_time_hm}}</h5>
+                            <h5>{{glanceActivity.distance / 1000}}km</h5>
+                            <h5>{{glanceActivity.total_elevation_gain}}m vertical</h5>
+                            {{glanceActivity.average_speed}}
+                            <img src="{{ glanceActivity.summary_img_link }}">
+                            <hr>
+                        </div>
+                    </div>
+                </div>
             </div>
+
 
             <div ng-show="activePopularRides == true">
                 <div ng-show="loadingPopular == true" id="spinner" class="sk-circle">
@@ -81,7 +96,7 @@
                     <div class="sk-circle12 sk-child"></div>
                 </div>
                 <div ng-show="loadingPopular == false" style="border: 1px dotted black;
-                overflow-x: hidden; overflow-y: scroll; height: 90%;">
+                overflow-x: hidden; overflow-y: scroll; height: 85%;">
                     <div ng-repeat="popularActivity in (allActivities | orderBy: '-kudos_count' | limitTo: 10)">
                         <a href="{{popularActivity.strava_link}}" target="_blank">{{popularActivity.name}}</a>
                         <h4>{{popularActivity.kudos_count}} Kudos</h4>
@@ -126,9 +141,3 @@
         </div>
     </div>
 </div>
-
-<footer class="container-fluid">
-    <hr>
-    <p align="center">copyright Sica si Tva</p>
-</footer>
-

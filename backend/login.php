@@ -9,6 +9,5 @@ $data = json_decode($postdata);
 $code = $data->code;
 $oauthResponse = $api->tokenExchange($code);
 $api->setAccessToken($oauthResponse->access_token);
-$response = array('access_token' => $oauthResponse->access_token);
-echo json_encode($response);
+echo json_encode($oauthResponse);
 ?>
