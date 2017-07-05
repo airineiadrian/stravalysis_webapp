@@ -15,7 +15,7 @@ app.factory('chartBuilder', function($rootScope) {
 		var helper = buildChartHelper(activities, daysAgo, metric);
 		service.myChart = helper.chart;
 
-		
+
 		document.getElementById("myChart").onclick = function(evt) {
 			var activePoints = service.myChart.getElementsAtEvent(evt);
 			console.log('DEBUG activePoints: ');
@@ -180,7 +180,8 @@ app.config(function($routeProvider) {
 	
 });
 
-app.run(function($rootScope) {
+app.run(function($rootScope, $location) {
+	console.log('SICA LOCATIE: ' + $location.absUrl());
 	$rootScope.loading = false;
 	$rootScope.clientId = '17879';
 	$rootScope.clientSecret = '45845c77e4cd25aeee107083f5da7a40573d42e6';
@@ -188,7 +189,7 @@ app.run(function($rootScope) {
 	$rootScope.loadingPopular = true;
 });
 
-app.controller('mainCtrl', function($rootScope, $scope, $cookies, stravaApiService, userService, chartBuilder) {
+app.controller('mainCtrl', function($location, $rootScope, $scope, $cookies, stravaApiService, userService, chartBuilder) {
 	$scope.test = 'test';
 	$scope.sica = "marele cacat";
 	$scope.activePopularRides = false;
@@ -196,6 +197,10 @@ app.controller('mainCtrl', function($rootScope, $scope, $cookies, stravaApiServi
 	$scope.activeSearch = false;
 	$scope.showCycling = true;
 	$scope.search_for = "";
+
+	$scope.loginRedirectURI = 'https://www.strava.com/oauth/authorize?client_id=17879&response_type=code&redirect_uri='+$location.absUrl()+'login&state=mystate&approval_prompt=force';
+	$scope.loginRedirectURI = $scope.loginRedirectURI.replace('#', '%23');
+	console.log('SICAMB: ' + $scope.loginRedirectURI);
 
 	$scope.filterActivities = function(activities, showCycling) {
 		var result = [];
