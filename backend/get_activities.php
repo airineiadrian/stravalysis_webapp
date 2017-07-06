@@ -4,11 +4,9 @@ require_once('StravaApi.php');
 $api = new Iamstuartwilson\StravaApi(
 		17879,
 		'45845c77e4cd25aeee107083f5da7a40573d42e6');
-$postdata = file_get_contents("php://input");
-$data = json_decode($postdata);
-$accessToken = $data->access_token;
+$accessToken = $_GET['access_token'];
 $api->setAccessToken($accessToken);
-$substract_days = $data->substract_days;
+$substract_days = $_GET['substract_days'];
 $take_all = false;
 if($substract_days == -1)
 	$take_all = true;

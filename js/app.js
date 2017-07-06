@@ -79,10 +79,10 @@ app.factory('stravaApiService', function($rootScope, $http) {
 
 	service.getActivites = function(days) {
  		$rootScope.loading = true;
+ 		var link = 'backend/get_activities.php?access_token='+$rootScope.accessToken;
+ 		link = link + '&substract_days='+days;
 		return $http
- 					.post('backend/get_activities.php',
-					 			{ substract_days: days,
- 								access_token: $rootScope.accessToken})
+ 					.get(link)
 					.then(function (response) {
  						$rootScope.loading = false;
 						return response.data;
