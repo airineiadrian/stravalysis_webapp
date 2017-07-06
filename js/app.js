@@ -77,6 +77,7 @@ app.factory('userService', function($cookies) {
 app.factory('stravaApiService', function($rootScope, $http) {
 	var service = {}
 
+
 	service.getActivites = function(days) {
  		$rootScope.loading = true;
  		var link = 'backend/get_activities.php?access_token='+$rootScope.accessToken;
