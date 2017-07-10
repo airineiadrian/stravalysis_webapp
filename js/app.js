@@ -12,7 +12,7 @@ app.factory('chartBuilder', function($rootScope) {
 		if(service.myChart != undefined) {
 			service.myChart.destroy();
 		}
-		var helper = buildChartHelper(activities, daysAgo, metric);
+		var helper = buildChartHelper(activities, daysAgo, metric, 145);
 		service.myChart = helper.chart;
 
 

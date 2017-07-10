@@ -2,17 +2,46 @@
 @activities - json data with strava activities, as returned by service backend
 @daysAgo - integer, how many days we show in the chart
 @metric - string, either 'distance', 'time', 'pace' (only for run activities), 'elevation'
+@offsetHeight - integer, representing size in px of the value to be substracted from window.height so that 
+				the chart gets build on all available height
 
 returns: a javascript object with useful chart data
 { 'chart': the chart js object,
   'activitiesPerDay': list with activities per day (a day can have multiple activities)
 }
+
+The chart js will be drawn in the canvas with id "myChart"
+The canvas must be contained inside a element with id "parentMyChart"
+The chart will use all the available width of the "parentMyChart" element.
+
+ex: (this displays the chart on all available screen) 
+<div id="parentMyChart">
+	<canvas id="myChart"></canvas>
+</div>
+<script>
+buildChartHelper(activities, 30, 'distance', 0);
+</script>
+
 */
 
-var buildChartHelper = function(activities, daysAgo, metric) {
+var buildChartHelper = function(activities, daysAgo, metric, offsetHeight = -1) {
 
 	var ctx = document.getElementById("myChart").getContext("2d");
 	
+
+	if(offsetHeight > 0) {
+		// use the offset if we have set it to a positive integer
+		var currentWindowHeight = $(window).height();
+    	var canvas = document.getElementById("myChart");
+    	console.log(canvas);
+    	var chartHeight = currentWindowHeight - offsetHeight;
+    	var chartParent = document.getElementById("parentMyChart");
+    	canvas.width = chartParent.clientWidth;
+    	canvas.height = chartHeight;
+    	console.log(currentWindowHeight);
+    	console.log(chartParent.clientWidth);
+    }
+
 	function newDate(days) {
 			return moment().add(days, 'd').toDate();
 	}
