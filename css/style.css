@@ -66,6 +66,13 @@ html, body {
   width: 200px;
 }
 
+.modal-dialog {
+  overflow-y: initial !important;
+}
+.modal-body {
+    height: 65vh;
+    overflow-y: auto;
+}
 
 /* loading spinning wheel */
 .sk-circle {
