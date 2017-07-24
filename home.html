@@ -96,7 +96,7 @@
                     <div class="sk-circle12 sk-child"></div>
                 </div>
                 <div ng-show="loadingPopular == false" style="border: 1px dotted black;
-                overflow-x: hidden; overflow-y: scroll; height: 85%;">
+                overflow-x: hidden; overflow-y: scroll; height: 85vh;">
                     <div ng-repeat="popularActivity in (allActivities | orderBy: '-kudos_count' | limitTo: 10)">
                         <a href="{{popularActivity.strava_link}}" target="_blank">{{popularActivity.name}}</a>
                         <h4>{{popularActivity.kudos_count}} Kudos</h4>
@@ -125,7 +125,7 @@
                     <div class="sk-circle12 sk-child"></div>
                 </div>
                 <div ng-show="loadingPopular == false" style="border: 1px dotted black;
-                overflow-x: hidden; overflow-y: scroll; height: 90%;">
+                overflow-x: hidden; overflow-y: scroll; height: 85vh;">
                     <div ng-repeat="searchActivity in (allActivities | filter: {'name':search_for} | limitTo: 10)">
                         <a href="{{searchActivity.strava_link}}" target="_blank">{{searchActivity.name}}</a>
                         <h4>{{searchActivity.start_date}} </h4>

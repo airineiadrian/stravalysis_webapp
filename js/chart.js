@@ -35,6 +35,8 @@ var buildChartHelper = function(activities, daysAgo, metric, offsetHeight = -1) 
     	var canvas = document.getElementById("myChart");
     	console.log(canvas);
     	var chartHeight = currentWindowHeight - offsetHeight;
+    	if(daysAgo <= 15)
+    		chartHeight -= 10;
     	var chartParent = document.getElementById("parentMyChart");
     	canvas.width = chartParent.clientWidth;
     	canvas.height = chartHeight;
