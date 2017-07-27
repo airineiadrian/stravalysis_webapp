@@ -34,13 +34,13 @@
         <div class="col-sm-12">
 
             <div ng-show="activeDailyChart == true">
-                <div class="col-sm-9" id="parentMyChart" style="padding-right: 0px; padding-left: 0px;">
+                <div class="col-sm-10" id="parentMyChart" style="padding-right: 0px; padding-left: 0px;">
                     <ul class="nav nav-tabs">
                         <li ng-class="{'active': showCycling == true}"><a style="cursor:pointer" ng-click="changeShowCycling(true);changeMetric('distance');changeTimeframe(selectedTimeframe)"><i class="material-icons" style="font-size:28px;color:black">directions_bike</i></a></li>
                         <li ng-class="{'active': showCycling == false}"><a style="cursor:pointer" ng-click="changeShowCycling(false);changeMetric('distance');changeTimeframe(selectedTimeframe)"><i class="material-icons" style="font-size:28px;color:black">directions_run</i></a></li>
                         
                         <div style="text-align: right;" class="form-group form-inline">    
-                            <select class="form-control text" style="width: 150px; cursor:pointer;" ng-model="selectedTimeframe" ng-options="x.duration for x in timeframes" ng-change="changeTimeframe(selectedTimeframe)"></select>
+                            <select class="form-control text" style="width: 150px; cursor:pointer;" ng-model="selectedTimeframe" ng-options="x.duration for x in timeframes" ng-change="changeTimeframe(selectedTimeframe);calculateSummaryStats();"></select>
                             <select class="form-control text" style="width: 150px; text-transform: capitalize; cursor:pointer;" ng-model="selectedMetric" ng-options="x for x in metrics[showCycling ? 0 : 1]" ng-change="changeMetric(selectedMetric)"></select>
                         </div>
                         
@@ -64,16 +64,22 @@
                         <canvas id="myChart"></canvas>
                     </div> 
                 </div>
-                <div class="col-sm-3">
+                <div class="col-sm-2">
+                    <div>
+                        
+                    </div>
                     <div ng-show="showChartGlance == true">
-                        <div ng-repeat="glanceActivity in showChartGlanceActivities">
-                            <h5>{{glanceActivity.name}}</h5>
-                            <h5>{{glanceActivity.moving_time_hm}}</h5>
-                            <h5>{{glanceActivity.distance / 1000}}km</h5>
-                            <h5>{{glanceActivity.total_elevation_gain}}m vertical</h5>
-                            {{glanceActivity.average_speed}}
-                            <img src="{{ glanceActivity.summary_img_link }}">
-                            <hr>
+                        <div ng-repeat="glanceActivity in showChartGlanceActivities | limitTo: 1">
+                            <p class="text"><strong>{{glanceActivity.name}}</strong><br>
+                            <img src="{{ glanceActivity.summary_img_link }}"><br>
+                            {{glanceActivity.average_speed*3.62 | number: 2}} km/h<br>
+                            {{glanceActivity.moving_time_hm}}<br>
+                            {{glanceActivity.distance / 1000 | number: 2}} km<br>
+                            {{glanceActivity.total_elevation_gain}} m vertical<br>
+                            </p>
+                        </div>
+                        <div ng-show="showChartGlanceActivities.length >= 2">
+                            <p class="text" style="text-align: center"><strong>and {{showChartGlanceActivities.length-1}} more..</strong></p>
                         </div>
                     </div>
                 </div>

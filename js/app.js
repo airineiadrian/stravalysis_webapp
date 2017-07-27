@@ -15,9 +15,14 @@ app.factory('chartBuilder', function($rootScope) {
 		var helper = buildChartHelper(activities, daysAgo, metric, 145);
 		service.myChart = helper.chart;
 
+		// TODO: Sica baga aici cod pentru sa scrii deasupra la showGlance
 
 		document.getElementById("myChart").onclick = function(evt) {
 			var activePoints = service.myChart.getElementsAtEvent(evt);
+
+			console.log("SICA INVESTIGATIE PT TVA");
+			console.log(activePoints);
+
 			console.log('DEBUG activePoints: ');
 			console.log(service.myChart);
 			var chartData = activePoints[0]['_chart'].config.data;
@@ -33,6 +38,7 @@ app.factory('chartBuilder', function($rootScope) {
 		};
 
 		service.myChart.options.hover.onHover = function(e, elements) {
+			
 			$(e.currentTarget).css("cursor", elements[0] ? "pointer" : "default");			
 			if(elements[0]) {
 				$rootScope.showChartGlance = true;
@@ -252,7 +258,7 @@ app.controller('mainCtrl', function($location, $rootScope, $scope, $cookies, str
 
 	$scope.changeShowCycling = function(value) {
 		$scope.showCycling = value;
-	}
+	};
 
 	$scope.changeTimeframe = function(value) {
 		stravaApiService.getActivites(value.days).then(function(activities) {
@@ -276,15 +282,13 @@ app.controller('mainCtrl', function($location, $rootScope, $scope, $cookies, str
 		$scope.activePopularRides = true;
 		$scope.activeSearch = false;
 		$scope.activeDailyChart = false;
-	}
+	};
 
 	$scope.activateSearch = function() {
 		$scope.activePopularRides = false;
 		$scope.activeSearch = true;
 		$scope.activeDailyChart = false;
-	}
-
-
+	};
 
 });
 

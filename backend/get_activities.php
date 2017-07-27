@@ -31,15 +31,20 @@ while(true) {
 		
 		$poly = $activity->map->summary_polyline;
 		$poly = str_replace('\\\\', '\\', $poly);
-		$summary_img_link = 'https://maps.googleapis.com/maps/api/staticmap?size=200x200&path=weight:4|color:red|enc:';
+		$summary_img_link = 'https://maps.googleapis.com/maps/api/staticmap?size=170x170&path=weight:4|color:red|enc:';
 		$summary_img_link .= $poly;
 		$summary_img_link .= '&sensor=true&key=AIzaSyDg-GJdb6dPDanay9u_SjENXx8gA8gSNPk';
+
+		$summary_img_link_large = 'https://maps.googleapis.com/maps/api/staticmap?size=700x350&path=weight:4|color:red|enc:';
+		$summary_img_link_large .= $poly;
+		$summary_img_link_large .= '&sensor=true&key=AIzaSyDg-GJdb6dPDanay9u_SjENXx8gA8gSNPk';
 		
 		$h = $activity->moving_time / 60 / 60;
 		$h = intval($h);
 		$m = ($activity->moving_time / 60) % 60;
 		$activity->moving_time_hm = ($h == 0 ? '' : $h.'h:') . ($m < 10 && $h != 0 ? '0' : '') . $m . 'mins';
 		$activity->summary_img_link = $summary_img_link;
+		$activity->summary_img_link_large = $summary_img_link_large;
 
 		$obj = (object)$activity;
 		array_push($activityList, $obj);

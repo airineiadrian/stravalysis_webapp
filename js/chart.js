@@ -4,6 +4,7 @@
 @metric - string, either 'distance', 'time', 'pace' (only for run activities), 'elevation'
 @offsetHeight - integer, representing size in px of the value to be substracted from window.height so that 
 				the chart gets build on all available height
+@mobile - boolean, true if the chart is to be rendered on mobile instead of desktop
 
 returns: a javascript object with useful chart data
 { 'chart': the chart js object,
@@ -24,7 +25,7 @@ buildChartHelper(activities, 30, 'distance', 0);
 
 */
 
-var buildChartHelper = function(activities, daysAgo, metric, offsetHeight = -1) {
+var buildChartHelper = function(activities, daysAgo, metric, offsetHeight = -1, mobile = false) {
 
 	var ctx = document.getElementById("myChart").getContext("2d");
 	
@@ -187,87 +188,95 @@ var buildChartHelper = function(activities, daysAgo, metric, offsetHeight = -1) 
 
 	console.log(activities);
 	console.log(barChartData);
-
+	console.log("SICA UPDATE");
 	var dates = days;
 
-	return {
-		'chart': new Chart(ctx, {
-			type: 'bar',
-			data: {
-				labels: dates,
-				datasets: [{
-					data: barChartData,
-					backgroundColor: 
-						'rgba(255, 99, 132, 0.2)'
-					,
-					borderColor: 
-						'rgba(255,99,132,1)'
-					,
-					borderWidth: 1
-				}] 
+	var chart = new Chart(ctx, {
+		type: 'bar',
+		data: {
+			labels: dates,
+			datasets: [{
+				data: barChartData,
+				backgroundColor: 
+					'rgba(255, 99, 132, 0.2)'
+				,
+				borderColor: 
+					'rgba(255,99,132,1)'
+				,
+				borderWidth: 1
+			}] 
+		},
+		options: {
+			title : {
+				display: false,
+				text: "Data Chart",
 			},
-			options: {
-				title : {
-					display: false,
-					text: "Data Chart",
-				},
-				legend: {
-					display: false,
-					boxWidth: 100,
+			legend: {
+				display: false,
+				boxWidth: 100,
+				displayColors: false,
+			},
+			scales: {
+				xAxes: [{
+					stacked: true,
+					type: "category",
+					ticks: {
+						autoSkip: true,
+						maxTicksLimit: 30,
+						callback: function(value, index, values) {
+							d = new Date(value);
+							return formatDate(d);
+						}
+					},
+					gridLines: {
+						display: false,
+						color: 'black',
+						offsetGridLines: true,
+					},
+				}],
+				yAxes: [{
+					//stacked: true,
+					ticks: {
+						beginAtZero: true,
+						min: minYValue,
+						callback: callbackYLabel,
+						stepSize: stepSize,
+					},
+					gridLines: {
+						display: true,
+						borderDash: [5, 6],
+					}
+				}],
+			},
+			tooltips : {
 					displayColors: false,
-				},
-				scales: {
-					xAxes: [{
-						stacked: true,
-						type: "category",
-						ticks: {
-							autoSkip: true,
-							maxTicksLimit: 30,
-							callback: function(value, index, values) {
-								d = new Date(value);
-								return formatDate(d);
-							}
+					callbacks : { // HERE YOU CUSTOMIZE THE LABELS
+						title : function(tooltipItem, data) {
+							return data.labels[tooltipItem[0].index].toString().substring(0, 24);
 						},
-						gridLines: {
-							display: false,
-							color: 'black',
-							offsetGridLines: true,
+						beforeLabel : function(tooltipItem, data) {
+							return '';
 						},
-					}],
-					yAxes: [{
-						//stacked: true,
-						ticks: {
-							beginAtZero: true,
-							min: minYValue,
-							callback: callbackYLabel,
-							stepSize: stepSize,
+						label : callbackTooltip,
+						afterLabel : function(tooltipItem, data) {
+							// return array of string for multiple lines
+							return [''];
 						},
-						gridLines: {
-							display: true,
-							borderDash: [5, 6],
-						}
-					}],
-				},
-				tooltips : {
-						displayColors: false,
-						callbacks : { // HERE YOU CUSTOMIZE THE LABELS
-							title : function(tooltipItem, data) {
-								return data.labels[tooltipItem[0].index].toString().substring(0, 24);
-							},
-							beforeLabel : function(tooltipItem, data) {
-								return '';
-							},
-							label : callbackTooltip,
-							afterLabel : function(tooltipItem, data) {
-								// return array of string for multiple lines
-								return [''];
-							},
-						}
+					}
 
-				}, 
+			}, 
+		}
+	});
 
-			}
-		}),
-	'activitiesPerDay': activitiesPerDay
+	if(mobile == true) {
+		chart.options.hover.mode = 'nearest';
+		chart.options.hover.intersect = false;
+		chart.options.tooltips.mode = 'index';
+		chart.options.tooltips.intersect = false;
 	}
+
+	return {
+		'chart': chart,
+		'activitiesPerDay': activitiesPerDay
+	};
 };
