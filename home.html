@@ -65,14 +65,18 @@
                     </div> 
                 </div>
                 <div class="col-sm-2">
-                    <div>
-                        
+                    <div ng-show="loading == false">
+                    <p class="text">
+                    Total Distance: <strong> {{totalDistance | number: 0}} km </strong><br>
+                    Training Hours: <strong>{{totalHours / 3600 | number: 0}} h</strong><br>
+                    Elevation Gain: <strong>{{totalElevation | number: 0}} m</strong><br><br>
+                    </p>
                     </div>
                     <div ng-show="showChartGlance == true">
                         <div ng-repeat="glanceActivity in showChartGlanceActivities | limitTo: 1">
-                            <p class="text"><strong>{{glanceActivity.name}}</strong><br>
-                            <img src="{{ glanceActivity.summary_img_link }}"><br>
-                            {{glanceActivity.average_speed*3.62 | number: 2}} km/h<br>
+                            <p class="text"><strong>{{glanceActivity.name}}</strong></p>
+                            <img src="{{ glanceActivity.summary_img_link }}">
+                            <p class="text" style="padding-left: 10px; padding-top: 5px;">{{glanceActivity.average_speed*3.62 | number: 2}} km/h<br>
                             {{glanceActivity.moving_time_hm}}<br>
                             {{glanceActivity.distance / 1000 | number: 2}} km<br>
                             {{glanceActivity.total_elevation_gain}} m vertical<br>

@@ -42,15 +42,12 @@
         	</div>
         	<div class="modal-body">
         		  <div ng-repeat="glanceActivity in showChartGlanceActivities">
-                    <h4><a href="{{glanceActivity.strava_link}}" class="text" target="_blank" style="padding-bottom: 100px;">{{glanceActivity.name}}</a></h4>
+                    <h4><a href="{{glanceActivity.strava_link}}" class="text" target="_blank">{{glanceActivity.name}}</a></h4>
                     <div class="row">
-                        <div class="col-xs-10">
-                            <p style="text-align:center">
-                            <img src="{{ glanceActivity.summary_img_link_large }}">
-                            <br>
-                            </p>
+                        <div class="col-xs-9">
+                          <img src="{{ glanceActivity.summary_img_link_large }}">
                         </div>
-                        <div class="col-xs-2">
+                        <div class="col-xs-3">
                             <p class="text">{{glanceActivity.moving_time_hm}}<br>
                             {{glanceActivity.distance / 1000}}km<br>
                             {{glanceActivity.total_elevation_gain}}m vertical<br>

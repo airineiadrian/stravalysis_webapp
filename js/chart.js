@@ -79,6 +79,12 @@ var buildChartHelper = function(activities, daysAgo, metric, offsetHeight = -1, 
 	var speedData = [];
 	var activitiesPerDay = [];
 
+	// global variables for all data in the chart
+	var globalDistance = 0;
+	var globalHours = 0;
+	var globalElevation = 0;
+
+
 	var index = daysAgo;
 	console.log('DEBUG ce plm days ago: ' + daysAgo);
 	for(; index >= 0; index--) {
@@ -109,6 +115,9 @@ var buildChartHelper = function(activities, daysAgo, metric, offsetHeight = -1, 
 		distanceData.push(totalDistance);
 		hoursData.push(totalHours);
 		elevationData.push(totalElevation);
+		globalDistance += totalDistance;
+		globalHours += totalHours;
+		globalElevation += totalElevation;
 		if(totalDistance > 0)
 			speedData.push(totalDistance / (totalHours / 3600));
 		else
@@ -252,7 +261,7 @@ var buildChartHelper = function(activities, daysAgo, metric, offsetHeight = -1, 
 					displayColors: false,
 					callbacks : { // HERE YOU CUSTOMIZE THE LABELS
 						title : function(tooltipItem, data) {
-							return data.labels[tooltipItem[0].index].toString().substring(0, 24);
+							return data.labels[tooltipItem[0].index].toString().substring(0, 21);
 						},
 						beforeLabel : function(tooltipItem, data) {
 							return '';
@@ -277,6 +286,9 @@ var buildChartHelper = function(activities, daysAgo, metric, offsetHeight = -1, 
 
 	return {
 		'chart': chart,
-		'activitiesPerDay': activitiesPerDay
+		'activitiesPerDay': activitiesPerDay,
+		'totalDistance': globalDistance,
+		'totalHours': globalHours,
+		'totalElevation': globalElevation
 	};
 };

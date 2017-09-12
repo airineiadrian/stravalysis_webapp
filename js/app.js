@@ -15,7 +15,14 @@ app.factory('chartBuilder', function($rootScope) {
 		var helper = buildChartHelper(activities, daysAgo, metric, 145);
 		service.myChart = helper.chart;
 
+		console.log("SIQ");
+		console.log(activities);
 		// TODO: Sica baga aici cod pentru sa scrii deasupra la showGlance
+		$rootScope.totalDistance = helper.totalDistance;
+		$rootScope.totalHours = helper.totalHours;
+		$rootScope.totalElevation = helper.totalElevation;
+
+		
 
 		document.getElementById("myChart").onclick = function(evt) {
 			var activePoints = service.myChart.getElementsAtEvent(evt);
