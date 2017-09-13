@@ -64,7 +64,7 @@
                         <canvas id="myChart"></canvas>
                     </div> 
                 </div>
-                <div class="col-sm-2">
+                <div class="col-sm-2" style="padding-right: 0">
                     <div ng-show="loading == false">
                     <p class="text">
                     Total Distance: <strong> {{totalDistance | number: 0}} km </strong><br>
@@ -85,6 +85,11 @@
                         <div ng-show="showChartGlanceActivities.length >= 2">
                             <p class="text" style="text-align: center"><strong>and {{showChartGlanceActivities.length-1}} more..</strong></p>
                         </div>
+                    </div>
+                    <div ng-show="showInfoBoxChart == true" class="alert alert-info alert-dismissable text">
+                        <a class="close" data-dismiss="alert" aria-label="close">×</a>
+                        <h4 class="alert-heading"><i class="fa fa-info-circle" aria-hidden="true"></i></h4>
+                        <p>Move the mouse over the chart to take a glance at your activities.</p>
                     </div>
                 </div>
             </div>

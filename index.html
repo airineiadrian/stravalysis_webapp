@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
+    <script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyDZ3czA3I9LdBoUYF3nVj0Jo0aXD8EElHE&libraries=geometry&amp;sensor=false"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-cookies.js"></script>
@@ -16,8 +17,9 @@
 		<link href="https://fonts.googleapis.com/css?family=Allerta+Stencil|Nunito+Sans|Russo+One" rel="stylesheet">
 		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 		<script src="http://urigo.github.io/angular-spinkit/javascripts/angular-spinkit.js"></script>
-		<script src="js/chart.js?2.0"></script>
-		<script src="js/app.js?2.0"></script>
+		<script src="js/chart.js?3.0"></script>
+		<script src="js/app.js?3.0"></script>
+    <script src="js/maps.js?3.0"></script>
 		<link rel="stylesheet" href="css/style.css">
 		<script src='https://api.mapbox.com/mapbox-gl-js/v0.38.0/mapbox-gl.js'></script>
 		<link href='https://api.mapbox.com/mapbox-gl-js/v0.38.0/mapbox-gl.css' rel='stylesheet' />
@@ -42,19 +44,56 @@
         	</div>
         	<div class="modal-body">
         		  <div ng-repeat="glanceActivity in showChartGlanceActivities">
-                    <h4><a href="{{glanceActivity.strava_link}}" class="text" target="_blank">{{glanceActivity.name}}</a></h4>
                     <div class="row">
-                        <div class="col-xs-9">
-                          <img src="{{ glanceActivity.summary_img_link_large }}">
+                        <div class="col-md-9">
+                          <div class="col-md-6">
+                            <h4><a href="{{glanceActivity.strava_link}}" class="text" target="_blank">{{glanceActivity.name}}</a></h4>
+                          </div>
+                          <div class="col-md-3 pull-right text-center">
+                            <p class="text" style="margin-top: 10px"><span class="badge">{{glanceActivity.kudos_count}}</span> <i class="fa fa-thumbs-up" aria-hidden="true"></i> <span class="badge">{{glanceActivity.comment_count}}</span> <i class="fa fa-comment" aria-hidden="true"></i> </p>
+                          </div>
+                          <div id="map" ng-attr-id="{{ 'maps-' + $index }}" style="width: 632px; height: 350px;"></div>
                         </div>
-                        <div class="col-xs-3">
-                            <p class="text">{{glanceActivity.moving_time_hm}}<br>
-                            {{glanceActivity.distance / 1000}}km<br>
-                            {{glanceActivity.total_elevation_gain}}m vertical<br>
+                        <div class="col-md-3" style="margin-top: 39px;">
+                            <p class="text">Moving Time <strong>{{glanceActivity.moving_time_hm}}</strong><br>
+                            Distance <strong>{{glanceActivity.distance / 1000 | number: 2}} km</strong><br>
+                            Vertical Gain <strong>{{glanceActivity.total_elevation_gain}} m</strong><br>
+                            <span ng-show="glanceActivity.device_watts == true" class="text">Normalized Power <strong>{{glanceActivity.weighted_average_watts}} watts</strong></span>
                             </p>
+                            <table class="table">
+                              <thead>
+                                <tr class="text">
+                                  <th></th>
+                                  <th class="text-center">Avg</th>
+                                  <th class="text-center">Max</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr title="Speed km/h" class="text">
+                                  <td class="text-center"><i class="fa fa-tachometer fa-lg" aria-hidden="true" style="color: #1687DE"></i></td>
+                                  <td class="text-center">{{glanceActivity.average_speed*3.61| number : 1}}</td>
+                                  <td class="text-center">{{glanceActivity.max_speed*3.61 | number : 1}}</td>
+                                </tr>
+                                <tr ng-show="glanceActivity.has_heartrate == true" title="Heart Rate BPM" class="text">
+                                  <td class="text-center"><i class="fa fa-heartbeat fa-lg" aria-hidden="true" style="color: #DE1616"></i></td>
+                                  <td class="text-center">{{glanceActivity.average_heartrate | number: 0}}</td>
+                                  <td class="text-center">{{glanceActivity.max_heartrate | number: 0}}</td>
+                                </tr>
+                                <tr ng-show="glanceActivity.device_watts == true" class="text" title="Power in Watts">
+                                  <td class="text-center"><i class="fa fa-bolt fa-lg" aria-hidden="true" style="color: #CA16DE"></i></td>
+                                  <td class="text-center">{{glanceActivity.average_watts | number : 0}}</td>
+                                  <td class="text-center">{{glanceActivity.max_watts | number: 0}}</td>
+                                </tr>
+                                <tr ng-show="glanceActivity.average_temp" class="text" title="Temperature">
+                                  <td class="text-center"><i class="fa fa-thermometer-empty fa-lg" aria-hidden="true" style="color: #DE6D16;"></i></td>
+                                  <td class="text-center">{{glanceActivity.average_temp | number : 0}}&deg;C</td>
+                                  <td></td>
+                                </tr>
+                              </tbody>
+                            </table>
                         </div>
                     </div>
-                    <hr>
+                    <hr ng-show="$index != showChartGlanceActivities.length-1">
               </div>
         	</div>
         	<div class="modal-footer">

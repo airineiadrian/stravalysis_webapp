@@ -34,15 +34,12 @@ var buildChartHelper = function(activities, daysAgo, metric, offsetHeight = -1, 
 		// use the offset if we have set it to a positive integer
 		var currentWindowHeight = $(window).height();
     	var canvas = document.getElementById("myChart");
-    	console.log(canvas);
     	var chartHeight = currentWindowHeight - offsetHeight;
     	if(daysAgo <= 15)
     		chartHeight -= 10;
     	var chartParent = document.getElementById("parentMyChart");
     	canvas.width = chartParent.clientWidth;
     	canvas.height = chartHeight;
-    	console.log(currentWindowHeight);
-    	console.log(chartParent.clientWidth);
     }
 
 	function newDate(days) {
@@ -86,7 +83,6 @@ var buildChartHelper = function(activities, daysAgo, metric, offsetHeight = -1, 
 
 
 	var index = daysAgo;
-	console.log('DEBUG ce plm days ago: ' + daysAgo);
 	for(; index >= 0; index--) {
 		var curDate = newDate(-index);
 		var visited = false;
@@ -126,7 +122,6 @@ var buildChartHelper = function(activities, daysAgo, metric, offsetHeight = -1, 
 	
 	var minYValue = 0;
 	var stepSize = 0;
-	console.log('DEBUG metrica aleasa: ' + metric);
 	if(metric == 'distance') {
 		var callbackYLabel = function(value, index, values) {
 			if(value == 0)
@@ -195,9 +190,6 @@ var buildChartHelper = function(activities, daysAgo, metric, offsetHeight = -1, 
 		}
 	}
 
-	console.log(activities);
-	console.log(barChartData);
-	console.log("SICA UPDATE");
 	var dates = days;
 
 	var chart = new Chart(ctx, {

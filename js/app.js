@@ -15,23 +15,13 @@ app.factory('chartBuilder', function($rootScope) {
 		var helper = buildChartHelper(activities, daysAgo, metric, 145);
 		service.myChart = helper.chart;
 
-		console.log("SIQ");
-		console.log(activities);
-		// TODO: Sica baga aici cod pentru sa scrii deasupra la showGlance
 		$rootScope.totalDistance = helper.totalDistance;
 		$rootScope.totalHours = helper.totalHours;
 		$rootScope.totalElevation = helper.totalElevation;
 
-		
-
 		document.getElementById("myChart").onclick = function(evt) {
 			var activePoints = service.myChart.getElementsAtEvent(evt);
 
-			console.log("SICA INVESTIGATIE PT TVA");
-			console.log(activePoints);
-
-			console.log('DEBUG activePoints: ');
-			console.log(service.myChart);
 			var chartData = activePoints[0]['_chart'].config.data;
 			var idx = activePoints[0]['_index'];
 
@@ -42,12 +32,14 @@ app.factory('chartBuilder', function($rootScope) {
 			//window.open(url,'_blank');
 			$rootScope.$apply();
 			$("#myModal").modal(); 
+			initializeMaps($rootScope.showChartGlanceActivities);
 		};
 
 		service.myChart.options.hover.onHover = function(e, elements) {
-			
+
 			$(e.currentTarget).css("cursor", elements[0] ? "pointer" : "default");			
 			if(elements[0]) {
+				$rootScope.showInfoBoxChart = false;
 				$rootScope.showChartGlance = true;
 				$rootScope.showChartGlanceActivities = helper.activitiesPerDay[elements[0]['_index']];
 				$rootScope.$apply();
@@ -56,9 +48,6 @@ app.factory('chartBuilder', function($rootScope) {
 				$rootScope.$apply();
 			}
 		}
-
-		console.log(service.myChart.options);
-
 	}
 
 	return service;
@@ -156,12 +145,9 @@ app.config(function($routeProvider) {
 								code: authCode})
 						.then(function (response) {
 							var accessToken = response.data.access_token;
-							console.log('sica login response:');
-							console.log(response);
 							if(accessToken) {
 								var expireDate = new Date();
 								expireDate.setDate(expireDate.getDate()+30);
-								console.log('sica expire date ' + expireDate);
 								$cookies.put('accessToken', accessToken, {'expires': expireDate});
 								$rootScope.accessToken = accessToken;
 								$cookies.putObject('athlete', response.data.athlete, {'expires': expireDate});
@@ -194,12 +180,12 @@ app.config(function($routeProvider) {
 });
 
 app.run(function($rootScope, $location) {
-	console.log('SICA LOCATIE: ' + $location.absUrl());
 	$rootScope.loading = false;
 	$rootScope.clientId = '17879';
 	$rootScope.clientSecret = '45845c77e4cd25aeee107083f5da7a40573d42e6';
 	$rootScope.showChartGlance = false;
 	$rootScope.loadingPopular = true;
+	$rootScope.showInfoBoxChart = true;
 });
 
 app.controller('mainCtrl', function($location, $rootScope, $scope, $cookies, stravaApiService, userService, chartBuilder) {
@@ -213,7 +199,6 @@ app.controller('mainCtrl', function($location, $rootScope, $scope, $cookies, str
 
 	$scope.loginRedirectURI = 'https://www.strava.com/oauth/authorize?client_id=17879&response_type=code&redirect_uri='+$location.absUrl()+'login&state=mystate&approval_prompt=force';
 	$scope.loginRedirectURI = $scope.loginRedirectURI.replace('#', '%23');
-	console.log('SICAMB: ' + $scope.loginRedirectURI);
 
 	$scope.filterActivities = function(activities, showCycling) {
 		var result = [];
@@ -238,11 +223,8 @@ app.controller('mainCtrl', function($location, $rootScope, $scope, $cookies, str
 	// TODO: this is a hack, use resolve in $routeProvider instead
 	$scope.selectedTimeframe = $scope.timeframes[0];
 	$scope.selectedMetric = $scope.metrics[0][0];
-	console.log('sicaaaaa');
-	console.log($scope.selectedTimeframe);
 	
 	$rootScope.$watch('accessToken', function() {
-			console.log('sica accestoken: ' + $rootScope.accessToken);
 			if($rootScope.accessToken) {
 				stravaApiService.getActivites('7').then(function(activities) {
 					$scope.activities = $scope.filterActivities(activities, $scope.showCycling);
@@ -252,16 +234,11 @@ app.controller('mainCtrl', function($location, $rootScope, $scope, $cookies, str
 				stravaApiService.getActivites(-1).then(function(activities) {
 					$scope.allActivities = activities;
 					$rootScope.loadingPopular = false;
-					console.log('got all activities');
 				});
 
 				$rootScope.athlete = userService.getAthlete();
-				console.log("getAthlete: ");
-				console.log($rootScope.athlete);
 			}
 	});
-
-	console.log('sica aici');
 
 	$scope.changeShowCycling = function(value) {
 		$scope.showCycling = value;
