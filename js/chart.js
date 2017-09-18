@@ -94,9 +94,19 @@ var buildChartHelper = function(activities, daysAgo, metric, offsetHeight = -1, 
 		for(i = 0; i < n; i++) {
 			var activity = activityList[i];
 			var activityDate = new Date(activity.start_date);
+			activity.activity_date = activityDate;
 			if(formatDateDMY(activityDate) == formatDateDMY(curDate)) {
 				if(visited == false)
 					days.push(activityDate);
+				if(activity.type == 'Run') {
+					// calculate average pace
+					var value = ((activity.distance / 1000) / (activity.moving_time / 3600));
+					var mins = Math.floor(3600 / value / 60);
+					var secs = Math.round(3600 / value % 60);
+					if(secs < 10)
+						secs = '0'+secs;
+					activity.pace = mins + ':' + secs + ' min/km';
+				}
 				totalDistance += activity.distance / 1000;
 				totalHours += activity.moving_time;
 				totalElevation += activity.total_elevation_gain;

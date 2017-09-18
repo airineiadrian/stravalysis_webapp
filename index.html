@@ -17,9 +17,9 @@
 		<link href="https://fonts.googleapis.com/css?family=Allerta+Stencil|Nunito+Sans|Russo+One" rel="stylesheet">
 		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 		<script src="http://urigo.github.io/angular-spinkit/javascripts/angular-spinkit.js"></script>
-		<script src="js/chart.js?3.0"></script>
-		<script src="js/app.js?3.0"></script>
-    <script src="js/maps.js?3.0"></script>
+		<script src="js/chart.js?4.0"></script>
+		<script src="js/app.js?4.0"></script>
+    <script src="js/maps.js?4.0"></script>
 		<link rel="stylesheet" href="css/style.css">
 		<script src='https://api.mapbox.com/mapbox-gl-js/v0.38.0/mapbox-gl.js'></script>
 		<link href='https://api.mapbox.com/mapbox-gl-js/v0.38.0/mapbox-gl.css' rel='stylesheet' />
@@ -50,15 +50,18 @@
                             <h4><a href="{{glanceActivity.strava_link}}" class="text" target="_blank">{{glanceActivity.name}}</a></h4>
                           </div>
                           <div class="col-md-3 pull-right text-center">
-                            <p class="text" style="margin-top: 10px"><span class="badge">{{glanceActivity.kudos_count}}</span> <i class="fa fa-thumbs-up" aria-hidden="true"></i> <span class="badge">{{glanceActivity.comment_count}}</span> <i class="fa fa-comment" aria-hidden="true"></i> </p>
+                            <p class="text" style="margin-top: 10px"><span class="badge strava-badge">{{glanceActivity.kudos_count}}</span> <i class="fa fa-thumbs-up strava-social" aria-hidden="true"></i> <span class="badge strava-badge">{{glanceActivity.comment_count}}</span> <i class="fa fa-comment strava-social" aria-hidden="true"></i> </p>
                           </div>
                           <div id="map" ng-attr-id="{{ 'maps-' + $index }}" style="width: 632px; height: 350px;"></div>
                         </div>
                         <div class="col-md-3" style="margin-top: 39px;">
-                            <p class="text">Moving Time <strong>{{glanceActivity.moving_time_hm}}</strong><br>
+                            <p class="text">
+                              <span class="text" ng-show="glanceActivity.athlete_count > 1"><i class="fa fa-user-plus" aria-hidden="true"></i> {{glanceActivity.athlete_count-1}} other<br></span>
+                            Moving Time <strong>{{glanceActivity.moving_time_hm}}</strong><br>
                             Distance <strong>{{glanceActivity.distance / 1000 | number: 2}} km</strong><br>
                             Vertical Gain <strong>{{glanceActivity.total_elevation_gain}} m</strong><br>
                             <span ng-show="glanceActivity.device_watts == true" class="text">Normalized Power <strong>{{glanceActivity.weighted_average_watts}} watts</strong></span>
+                            <span ng-show="glanceActivity.type == 'Run'" class="text">Average Pace <strong>{{glanceActivity.pace}}</strong></span>
                             </p>
                             <table class="table">
                               <thead>

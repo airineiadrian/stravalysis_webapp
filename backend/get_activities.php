@@ -35,7 +35,7 @@ while(true) {
 		$summary_img_link .= $poly;
 		$summary_img_link .= '&sensor=true&key=AIzaSyDg-GJdb6dPDanay9u_SjENXx8gA8gSNPk';
 
-		$summary_img_link_large = 'https://maps.googleapis.com/maps/api/staticmap?size=632x350&path=weight:4|color:red|enc:';
+		$summary_img_link_large = 'https://maps.googleapis.com/maps/api/staticmap?size=420x180&path=weight:4|color:red|enc:';
 		$summary_img_link_large .= $poly;
 		$summary_img_link_large .= '&sensor=true&key=AIzaSyDg-GJdb6dPDanay9u_SjENXx8gA8gSNPk';
 		

@@ -188,7 +188,7 @@ app.run(function($rootScope, $location) {
 	$rootScope.showInfoBoxChart = true;
 });
 
-app.controller('mainCtrl', function($location, $rootScope, $scope, $cookies, stravaApiService, userService, chartBuilder) {
+app.controller('mainCtrl', function($location, $rootScope, $scope, $cookies, $sce, stravaApiService, userService, chartBuilder) {
 	$scope.test = 'test';
 	$scope.sica = "marele cacat";
 	$scope.activePopularRides = false;
@@ -221,14 +221,14 @@ app.controller('mainCtrl', function($location, $rootScope, $scope, $cookies, str
 	$scope.metrics = [ ['distance', 'time', 'elevation'], ['distance', 'time', 'elevation', 'pace'] ];
 	
 	// TODO: this is a hack, use resolve in $routeProvider instead
-	$scope.selectedTimeframe = $scope.timeframes[0];
+	$scope.selectedTimeframe = $scope.timeframes[4];
 	$scope.selectedMetric = $scope.metrics[0][0];
 	
 	$rootScope.$watch('accessToken', function() {
 			if($rootScope.accessToken) {
-				stravaApiService.getActivites('7').then(function(activities) {
+				stravaApiService.getActivites('180').then(function(activities) {
 					$scope.activities = $scope.filterActivities(activities, $scope.showCycling);
-					chartBuilder.build($scope.activities, 7, 'distance');
+					chartBuilder.build($scope.activities, 180, 'distance');
 				});
 
 				stravaApiService.getActivites(-1).then(function(activities) {
@@ -272,6 +272,48 @@ app.controller('mainCtrl', function($location, $rootScope, $scope, $cookies, str
 		$scope.activePopularRides = false;
 		$scope.activeSearch = true;
 		$scope.activeDailyChart = false;
+	};
+
+	$scope.formatStartDateNice = function(activity) {
+		var date = new Date(activity.start_date);
+		return date.toString().substring(0, 15);
+	};
+
+	$scope.highlight = function(haystack, needle) {
+		var loweredHaystack = haystack.toLowerCase();
+		var loweredNeedle = needle.toLowerCase();
+		var position = loweredHaystack.indexOf(loweredNeedle);
+		if(!needle || position == -1) {
+			if(haystack.length > 35) {
+				haystack = haystack.substring(0, 36) + '...';
+			}
+			return $sce.trustAsHtml(haystack);
+		}
+		var suffixEnd = false;
+		var prefixStart = false;
+
+		if(haystack.length > 35) {
+			haystack = haystack.substring(position);
+			if(position != 0) {
+				prefixStart = true;
+			}
+		}
+
+		if(haystack.length > 35) {
+			haystack = haystack.substring(0, 36);
+			suffixEnd = true;
+		}
+
+		var result = haystack.replace(new RegExp(needle, "gi"), function(match) {
+			return '<span class="highlightedText">' + match + '</span>';
+		});
+		if(prefixStart) {
+			result = '...' + result;
+		}
+		if(suffixEnd == true) {
+			result = result + '...';
+		}
+		return $sce.trustAsHtml(result);
 	};
 
 });

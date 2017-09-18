@@ -1,3 +1,20 @@
+.strava-badge {
+  color: #CE3D1E !important;
+  background-color: #CFCFCF !important;
+} 
+
+.strava-social {
+  color: #CE3D1E;
+}
+
+.highlightedText {
+    background: yellow;
+}
+
+.table.no-border tr td, .table.no-border tr th {
+  border-width: 0;
+}
+
 
 @-moz-document url-prefix() {
   select.form-control {

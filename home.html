@@ -74,19 +74,25 @@
                     </div>
                     <div ng-show="showChartGlance == true">
                         <div ng-repeat="glanceActivity in showChartGlanceActivities | limitTo: 1">
+                            <div class="text-left">
                             <p class="text"><strong>{{glanceActivity.name}}</strong></p>
-                            <img src="{{ glanceActivity.summary_img_link }}">
-                            <p class="text" style="padding-left: 10px; padding-top: 5px;">{{glanceActivity.average_speed*3.62 | number: 2}} km/h<br>
+                            <p class="text" style="font-size: 90%;">
+                            <span ng-show="glanceActivity.athlete_count > 1"><i class="fa fa-user-plus" aria-hidden="true"></i>{{glanceActivity.athlete_count-1}} other<br></span>
+                            {{glanceActivity.average_speed*3.62 | number: 2}} km/h<br>
                             {{glanceActivity.moving_time_hm}}<br>
                             {{glanceActivity.distance / 1000 | number: 2}} km<br>
                             {{glanceActivity.total_elevation_gain}} m vertical<br>
                             </p>
+                            </div>
+                            <div class="text-left">
+                                <img class="rounded" src="{{ glanceActivity.summary_img_link }}">
+                            </div>
                         </div>
                         <div ng-show="showChartGlanceActivities.length >= 2">
                             <p class="text" style="text-align: center"><strong>and {{showChartGlanceActivities.length-1}} more..</strong></p>
                         </div>
                     </div>
-                    <div ng-show="showInfoBoxChart == true" class="alert alert-info alert-dismissable text">
+                    <div ng-show="showInfoBoxChart == true" class="text alert alert-info alert-dismissable fade in">
                         <a class="close" data-dismiss="alert" aria-label="close">×</a>
                         <h4 class="alert-heading"><i class="fa fa-info-circle" aria-hidden="true"></i></h4>
                         <p>Move the mouse over the chart to take a glance at your activities.</p>
@@ -96,59 +102,134 @@
 
 
             <div ng-show="activePopularRides == true">
-                <div ng-show="loadingPopular == true" id="spinner" class="sk-circle">
-                    <div class="sk-circle1 sk-child"></div>
-                    <div class="sk-circle2 sk-child"></div>
-                    <div class="sk-circle3 sk-child"></div>
-                    <div class="sk-circle4 sk-child"></div>
-                    <div class="sk-circle5 sk-child"></div>
-                    <div class="sk-circle6 sk-child"></div>
-                    <div class="sk-circle7 sk-child"></div>
-                    <div class="sk-circle8 sk-child"></div>
-                    <div class="sk-circle9 sk-child"></div>
-                    <div class="sk-circle10 sk-child"></div>
-                    <div class="sk-circle11 sk-child"></div>
-                    <div class="sk-circle12 sk-child"></div>
+                <div ng-show="loadingPopular == true">
+                    <div class="text-center">
+                    <div class="text alert alert-info" style="display: inline-block;">
+                        <span class="alert-heading"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
+                        Please take a moment to wait as we are processing all your strava activities.
+                    </div>
+                    </div>
+                    <div ng-show="loadingPopular == true" id="spinner" class="sk-circle">
+                        <div class="sk-circle1 sk-child"></div>
+                        <div class="sk-circle2 sk-child"></div>
+                        <div class="sk-circle3 sk-child"></div>
+                        <div class="sk-circle4 sk-child"></div>
+                        <div class="sk-circle5 sk-child"></div>
+                        <div class="sk-circle6 sk-child"></div>
+                        <div class="sk-circle7 sk-child"></div>
+                        <div class="sk-circle8 sk-child"></div>
+                        <div class="sk-circle9 sk-child"></div>
+                        <div class="sk-circle10 sk-child"></div>
+                        <div class="sk-circle11 sk-child"></div>
+                        <div class="sk-circle12 sk-child"></div>
+                    </div>
                 </div>
-                <div ng-show="loadingPopular == false" style="border: 1px dotted black;
+                <div ng-show="loadingPopular == false" style="border: 0px dotted black;
                 overflow-x: hidden; overflow-y: scroll; height: 85vh;">
-                    <div ng-repeat="popularActivity in (allActivities | orderBy: '-kudos_count' | limitTo: 10)">
-                        <a href="{{popularActivity.strava_link}}" target="_blank">{{popularActivity.name}}</a>
-                        <h4>{{popularActivity.kudos_count}} Kudos</h4>
-                        <h5>{{popularActivity.moving_time_hm}}</h5>
-                        <h5>{{popularActivity.distance / 1000}}km</h5>
-                        <h5>{{popularActivity.total_elevation_gain}}m vertical</h5>
-                        <img src="{{ popularActivity.summary_img_link }}">
-                        <hr>
+                    <div ng-repeat="popularActivity in (allActivities | orderBy: '-kudos_count' | limitTo: 50)">
+                        <div class="col-md-6" ng-style="$index % 2 == 0 ? {'padding-left': '20px', 'padding-right': '10px'} : {'padding-left' : '10px', 'padding-right': '20px'} ">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h4 class="text"><span class="label label-info">{{$index+1}}</span> <a href="{{popularActivity.strava_link}}" target="_blank" title="{{popularActivity.name}}">{{(popularActivity.name | limitTo: 35) + (popularActivity.name.length > 35 ? '...' : '')}}</a>
+                                    <span class="pull-right">
+                                    <span class="badge" style="color: #CE3D1E; background-color: #CFCFCF;">{{popularActivity.kudos_count}}</span> <i class="fa fa-thumbs-up" style="color: #CE3D1E;" aria-hidden="true"></i> <span class="badge" style="color: #CE3D1E; background-color: #CFCFCF;">{{popularActivity.comment_count}}</span> <i class="fa fa-comment" aria-hidden="true" style="color: #CE3D1E;"></i>
+                                    </span>
+                                    </h4>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="table-responsive" style="margin-bottom: 0px; border-width: 0">
+
+                                        <table class="table no-border" style="margin-bottom: 0px;">
+                                        <tr>
+                                        <td style="text-align: center"><img src="{{ popularActivity.summary_img_link_large }}"></td>
+                                        <td style="text-align: right;">
+                                        <p class="text" style="font-size: 90%;">
+                                        <strong>{{ formatStartDateNice(popularActivity) }}</strong><br><br>
+                                        <span ng-show="popularActivity.athlete_count > 1"><i class="fa fa-user-plus" aria-hidden="true"></i>{{popularActivity.athlete_count-1}} other<br></span>
+                                        <span ng-show="popularActivity.device_watts == true">{{popularActivity.weighted_average_watts}} watts<br></span>
+                                        {{popularActivity.average_speed*3.62 | number: 2}} km/h<br>
+                                        {{popularActivity.moving_time_hm}}<br>
+                                        {{popularActivity.distance / 1000 | number: 2}} km<br>
+                                        {{popularActivity.total_elevation_gain}} m vertical<br>
+                                        </p>
+                                        </td>
+                                        </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div ng-show="activeSearch == true">
-                <div ng-show="loadingPopular == true" id="spinner" class="sk-circle">
-                    <div class="sk-circle1 sk-child"></div>
-                    <div class="sk-circle2 sk-child"></div>
-                    <div class="sk-circle3 sk-child"></div>
-                    <div class="sk-circle4 sk-child"></div>
-                    <div class="sk-circle5 sk-child"></div>
-                    <div class="sk-circle6 sk-child"></div>
-                    <div class="sk-circle7 sk-child"></div>
-                    <div class="sk-circle8 sk-child"></div>
-                    <div class="sk-circle9 sk-child"></div>
-                    <div class="sk-circle10 sk-child"></div>
-                    <div class="sk-circle11 sk-child"></div>
-                    <div class="sk-circle12 sk-child"></div>
+                <div ng-show="loadingPopular == true">
+                    <div class="text-center">
+                    <div class="text alert alert-info" style="display: inline-block;">
+                        <span class="alert-heading"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
+                        Please take a moment to wait as we are processing all your strava activities.
+                    </div>
+                    </div>
+                    <div id="spinner" class="sk-circle">
+                        <div class="sk-circle1 sk-child"></div>
+                        <div class="sk-circle2 sk-child"></div>
+                        <div class="sk-circle3 sk-child"></div>
+                        <div class="sk-circle4 sk-child"></div>
+                        <div class="sk-circle5 sk-child"></div>
+                        <div class="sk-circle6 sk-child"></div>
+                        <div class="sk-circle7 sk-child"></div>
+                        <div class="sk-circle8 sk-child"></div>
+                        <div class="sk-circle9 sk-child"></div>
+                        <div class="sk-circle10 sk-child"></div>
+                        <div class="sk-circle11 sk-child"></div>
+                        <div class="sk-circle12 sk-child"></div>
+                    </div>
                 </div>
-                <div ng-show="loadingPopular == false" style="border: 1px dotted black;
-                overflow-x: hidden; overflow-y: scroll; height: 85vh;">
-                    <div ng-repeat="searchActivity in (allActivities | filter: {'name':search_for} | limitTo: 10)">
-                        <a href="{{searchActivity.strava_link}}" target="_blank">{{searchActivity.name}}</a>
-                        <h4>{{searchActivity.start_date}} </h4>
-                        <h5>{{searchActivity.moving_time_hm}}</h5>
-                        <h5>{{searchActivity.distance / 1000}}km</h5>
-                        <h5>{{searchActivity.total_elevation_gain}}m vertical</h5>
-                        <img src="{{ searchActivity.summary_img_link }}">
-                        <hr>
+                <div ng-show="loadingPopular == false">
+                    <div class="text-center">
+                    <div class="text alert alert-success" style="display: inline-block;">
+                        <strong>{{ (allActivities | filter:{'name':search_for}).length }}</strong> activities found that match your search criteria.
+                        <span ng-show="(allActivities | filter:{'name':search_for}).length > 20">Showing only the most recent <strong>20</strong>.</span>
+                    </div>
+                    </div>
+                    <div style="overflow-x: hidden; overflow-y: scroll; height: 75vh;">
+                        <div ng-repeat="searchActivity in (allActivities | filter: {'name':search_for} | limitTo: 20)">
+
+                            <div class="col-md-6" ng-style="$index % 2 == 0 ? {'padding-left': '20px', 'padding-right': '10px'} : {'padding-left' : '10px', 'padding-right': '20px'} ">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h4 class="text" style="display: inline"><span class="label label-info">{{$index+1}}</span> <a href="{{searchActivity.strava_link}}" target="_blank" ng-bind-html="highlight(searchActivity.name, search_for)" title="{{searchActivity.name}}"></a></h4>
+                                    <h6 class="text" style="display: inline;">
+                                    <span class="pull-right">
+                                    <span class="badge strava-badge">{{searchActivity.kudos_count}}</span> <i class="fa fa-thumbs-up strava-social" aria-hidden="true"></i> <span class="badge strava-badge">{{searchActivity.comment_count}}</span> <i class="fa fa-comment strava-social" aria-hidden="true"></i>
+                                    </span>
+                                    </h6>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="table-responsive" style="margin-bottom: 0px; border-width: 0">
+
+                                        <table class="table no-border" style="margin-bottom: 0px;">
+                                        <tr>
+                                        <td style="text-align: center"><img src="{{ searchActivity.summary_img_link_large }}"></td>
+                                        <td style="text-align: right;">
+                                        <p class="text" style="font-size: 90%;">
+                                        <strong>{{ formatStartDateNice(searchActivity) }}</strong><br><br>
+                                        <span ng-show="searchActivity.athlete_count > 1"><i class="fa fa-user-plus" aria-hidden="true"></i>{{searchActivity.athlete_count-1}} other<br></span>
+                                        <span ng-show="searchActivity.device_watts == true">{{searchActivity.weighted_average_watts}} watts<br></span>
+                                        {{searchActivity.average_speed*3.62 | number: 2}} km/h<br>
+                                        {{searchActivity.moving_time_hm}}<br>
+                                        {{searchActivity.distance / 1000 | number: 2}} km<br>
+                                        {{searchActivity.total_elevation_gain}} m vertical<br>
+                                        </p>
+                                        </td>
+                                        </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            </div>        
+                        </div>
                     </div>
                 </div>
             </div>
