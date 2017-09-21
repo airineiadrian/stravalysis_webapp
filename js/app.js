@@ -1,6 +1,6 @@
 var app = angular.module('stravalysis', ['ngRoute', 'ngCookies', 'ngAnimate']);
 
-app.factory('chartBuilder', function($rootScope) {
+app.factory('chartBuilder', function($rootScope, simpleLoginService) {
 	var service = {};
 
 	service.myChart = undefined;
@@ -30,6 +30,7 @@ app.factory('chartBuilder', function($rootScope) {
 
 			var url = "http://example.com/?label=" + label + "&value=" + value;
 			//window.open(url,'_blank');
+			simpleLoginService.logAthlete($rootScope.athlete, 'click_chart');
 			$rootScope.$apply();
 			$("#myModal").modal(); 
 			initializeMaps($rootScope.showChartGlanceActivities);
@@ -52,6 +53,7 @@ app.factory('chartBuilder', function($rootScope) {
 
 	return service;
 });
+
 
 app.factory('userService', function($cookies) {
 	
@@ -93,6 +95,31 @@ app.factory('stravaApiService', function($rootScope, $http) {
 	return service;
 });
 
+app.factory('simpleLoginService', function($cookies, $http) {
+	var service = {};
+	service.testLog = function(message) {
+		var parameter = JSON.stringify({"message": message});
+		return $http
+			.post('backend/log.php',
+					{'message': message})
+			.then(function (response) {
+				console.log("SICA raspuns loggly: ");
+				console.log(response);
+			});
+	};
+
+	service.logAthlete = function(athlete, type) {
+		return $http
+			.post('backend/log.php',
+					{'type': type, 'athlete': athlete})
+			.then(function (response) {
+				console.log(response);
+			});
+	};
+
+	return service;
+});
+
 app.config(function($routeProvider) {
 	$routeProvider
 		.when("/", {
@@ -109,7 +136,8 @@ app.config(function($routeProvider) {
 		.when("/logout", {
 			controller: 'mainCtrl',
 			resolve: {
-				logout: function($location, userService) {
+				logout: function($location, userService, simpleLoginService, $rootScope) {
+					simpleLoginService.logAthlete($rootScope.athlete, 'logout');
 					userService.logoutUser();
 					$location.path("/");
 				}
@@ -135,7 +163,7 @@ app.config(function($routeProvider) {
 		.when("/login/:code", {
 			controller: 'mainCtrl',
 			resolve: {
- 				loginWithCode: function($route, $rootScope, $location, $http, $cookies) {
+ 				loginWithCode: function($route, $rootScope, $location, $http, $cookies, simpleLoginService) {
 					var authCode = $route.current.params.code;
 					$rootScope.loading = true;
 					return $http
@@ -152,6 +180,7 @@ app.config(function($routeProvider) {
 								$rootScope.accessToken = accessToken;
 								$cookies.putObject('athlete', response.data.athlete, {'expires': expireDate});
 								$rootScope.athlete = response.data.athlete;
+								simpleLoginService.logAthlete($rootScope.athlete, 'login');
 								$location.path('/home');
 							} else {
 								$location.path('/');
@@ -188,7 +217,7 @@ app.run(function($rootScope, $location) {
 	$rootScope.showInfoBoxChart = true;
 });
 
-app.controller('mainCtrl', function($location, $rootScope, $scope, $cookies, $sce, stravaApiService, userService, chartBuilder) {
+app.controller('mainCtrl', function($location, $rootScope, $scope, $cookies, $sce, stravaApiService, userService, chartBuilder, simpleLoginService) {
 	$scope.test = 'test';
 	$scope.sica = "marele cacat";
 	$scope.activePopularRides = false;
