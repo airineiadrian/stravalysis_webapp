@@ -289,18 +289,21 @@ app.controller('mainCtrl', function($location, $rootScope, $scope, $cookies, $sc
 		$scope.activePopularRides = false;
 		$scope.activeSearch = false;
 		$scope.activeDailyChart = true;
+		simpleLoginService.logAthlete($rootScope.athlete, 'click_daily_chart_page');
 	};
 
 	$scope.activatePopularRides = function() {
 		$scope.activePopularRides = true;
 		$scope.activeSearch = false;
 		$scope.activeDailyChart = false;
+		simpleLoginService.logAthlete($rootScope.athlete, 'click_popular_rides_page');
 	};
 
 	$scope.activateSearch = function() {
 		$scope.activePopularRides = false;
 		$scope.activeSearch = true;
 		$scope.activeDailyChart = false;
+		simpleLoginService.logAthlete($rootScope.athlete, 'click_search_page');
 	};
 
 	$scope.formatStartDateNice = function(activity) {
