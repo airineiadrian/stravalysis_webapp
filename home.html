@@ -19,9 +19,10 @@
                         <input type="text" class="form-control text" placeholder="Search Activity..." ng-click="activateSearch()" ng-model="search_for">
                     </div>
                 </form></li>
+                <li><span class="pull-right"><img src="img/api_logo_pwrdBy_strava_horiz_light.png" style="height: 46px;"></span></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="strava/id" style="padding-top: 2px; padding-bottom: 2px;"><img src="{{athlete.profile_medium}}" class="img-circle" style="height: 46px;"></a></li>
+                <li><a href="https://www.strava.com/athletes/{{athlete.id}}" target="_blank" style="padding-top: 2px; padding-bottom: 2px;"><img src="{{athlete.profile_medium}}" class="img-circle" style="height: 46px;"></a></li>
                 <li><a href="#logout" class="text"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
             </ul>
         </div>
