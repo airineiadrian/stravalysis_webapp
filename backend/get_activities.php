@@ -5,6 +5,9 @@ $api = new Iamstuartwilson\StravaApi(
 		17879,
 		'45845c77e4cd25aeee107083f5da7a40573d42e6');
 $accessToken = $_GET['access_token'];
+
+// TODO: remove this, this is for testing dev beta only
+$hardcoded = 'ca7d56502a9708d5146b21f9192775952d9ecfe5';
 $api->setAccessToken($accessToken);
 $substract_days = $_GET['substract_days'];
 $take_all = false;

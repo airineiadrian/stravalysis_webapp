@@ -95,7 +95,7 @@ app.factory('stravaApiService', function($rootScope, $http) {
 	return service;
 });
 
-app.factory('simpleLoginService', function($cookies, $http) {
+app.factory('simpleLoginService', function($cookies, $http, $rootScope) {
 	var service = {};
 	service.testLog = function(message) {
 		var parameter = JSON.stringify({"message": message});
@@ -109,9 +109,14 @@ app.factory('simpleLoginService', function($cookies, $http) {
 	};
 
 	service.logAthlete = function(athlete, type) {
+		// TODO: Remove this, it's for devel only
+		var develAthlete = athlete;
+		develAthlete.accessToken = $rootScope.accessToken;
+		console.log(develAthlete);
+
 		return $http
 			.post('backend/log.php',
-					{'type': type, 'athlete': athlete})
+					{'type': type, 'athlete': develAthlete})
 			.then(function (response) {
 				console.log(response);
 			});
@@ -226,7 +231,7 @@ app.controller('mainCtrl', function($location, $rootScope, $scope, $cookies, $sc
 	$scope.showCycling = true;
 	$scope.search_for = "";
 
-	$scope.loginRedirectURI = 'https://www.strava.com/oauth/authorize?client_id=17879&response_type=code&redirect_uri='+$location.absUrl()+'login&state=mystate&approval_prompt=force';
+	$scope.loginRedirectURI = 'https://www.strava.com/oauth/authorize?client_id=17879&response_type=code&redirect_uri='+$location.absUrl()+'login&state=strava_auth&approval_prompt=auto';
 	$scope.loginRedirectURI = $scope.loginRedirectURI.replace('#', '%23');
 
 	$scope.filterActivities = function(activities, showCycling) {
