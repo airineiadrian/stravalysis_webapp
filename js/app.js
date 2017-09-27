@@ -1,4 +1,4 @@
-var app = angular.module('stravalysis', ['ngRoute', 'ngCookies', 'ngAnimate']);
+var app = angular.module('stranalytics', ['ngRoute', 'ngCookies', 'ngAnimate']);
 
 app.factory('chartBuilder', function($rootScope, simpleLoginService) {
 	var service = {};
@@ -286,6 +286,7 @@ app.controller('mainCtrl', function($location, $rootScope, $scope, $cookies, $sc
 	};
 
 	$scope.changeMetric = function(value) {
+		simpleLoginService.logAthlete($rootScope.athlete, 'metric_'+value);
 		$scope.selectedMetric = value;
 		chartBuilder.build($scope.activities, $scope.selectedTimeframe.days, $scope.selectedMetric);
 	};
